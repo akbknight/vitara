@@ -659,9 +659,74 @@
     .reveal-d2 { transition-delay: 0.2s; }
     .reveal-d3 { transition-delay: 0.3s; }
 
+    /* MOBILE NAV */
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 22px;
+      height: 14px;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .nav-toggle-bar {
+      display: block;
+      width: 100%;
+      height: 1.5px;
+      background: var(--ink);
+      transition: transform 0.22s ease, opacity 0.22s ease;
+    }
+    .nav-toggle.active .nav-toggle-bar:first-child {
+      transform: translateY(6.25px) rotate(45deg);
+    }
+    .nav-toggle.active .nav-toggle-bar:last-child {
+      transform: translateY(-6.25px) rotate(-45deg);
+    }
+    .nav-mobile {
+      position: fixed;
+      top: 68px; left: 0; right: 0;
+      background: rgba(248, 247, 243, 0.97);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--rule);
+      padding: 0 var(--pad) 2rem;
+      display: flex;
+      flex-direction: column;
+      z-index: 99;
+      transform: translateY(-6px);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.22s ease, opacity 0.22s ease;
+    }
+    .nav-mobile.open {
+      transform: none;
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .nav-mobile a {
+      font-family: var(--ff-sans);
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--ink-2);
+      text-decoration: none;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--rule);
+      transition: color 0.2s;
+    }
+    .nav-mobile a:hover { color: var(--ink); }
+    .nav-mobile .btn-sm {
+      margin-top: 1.5rem;
+      width: fit-content;
+      border-bottom: none;
+      padding-top: 0;
+    }
+
     /* RESPONSIVE */
     @media (max-width: 900px) {
       .nav-links { display: none; }
+      .nav-toggle { display: flex; }
       .failures { grid-template-columns: 1fr; }
       .failure-item + .failure-item { border-left: none; border-top: 1px solid var(--rule); }
       .dimension-row { grid-template-columns: 1fr; }
@@ -695,9 +760,20 @@
       <a href="#who">Who It's For</a>
       <a href="#founder">Founder</a>
     </nav>
-    <a href="#waitlist" class="btn btn-sm">Join waitlist</a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+    </button>
+    <a href="#waitlist" class="btn btn-sm nav-desktop-cta">Join waitlist</a>
   </div>
 </header>
+<div id="nav-mobile" class="nav-mobile" role="navigation" aria-label="Mobile navigation">
+  <a href="#problem">Problem</a>
+  <a href="#approach">Approach</a>
+  <a href="#who">Who It&rsquo;s For</a>
+  <a href="#founder">Founder</a>
+  <a href="#waitlist" class="btn btn-sm">Join waitlist</a>
+</div>
 
 <!-- HERO -->
 <section id="hero">
@@ -1034,6 +1110,21 @@
     { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
   );
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  const navToggle = document.getElementById('nav-toggle');
+  const navMobile = document.getElementById('nav-mobile');
+  navToggle.addEventListener('click', () => {
+    const isOpen = navMobile.classList.toggle('open');
+    navToggle.classList.toggle('active', isOpen);
+    navToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+  navMobile.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      navMobile.classList.remove('open');
+      navToggle.classList.remove('active');
+      navToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
 
   function submitForm() {
     const name = document.getElementById('f-name').value.trim();
