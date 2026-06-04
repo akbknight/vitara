@@ -20,12 +20,12 @@
 
 <header id="nav">
   <div class="container nav-inner">
-    <a href="/" class="logo">VITARA</a>
+    <a href="./" class="logo">VITARA</a>
     <nav class="nav-links" aria-label="Site navigation">
-      <a href="/product/" class="nav-link">Product</a>
-      <a href="/how-it-works/" class="nav-link">How It Works</a>
-      <a href="/docs/" class="nav-link">Docs</a>
-      <a href="/about/" class="nav-link">About</a>
+      <a href="product/" class="nav-link">Product</a>
+      <a href="how-it-works/" class="nav-link">How It Works</a>
+      <a href="docs/" class="nav-link">Docs</a>
+      <a href="about/" class="nav-link">About</a>
     </nav>
     <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
       <span class="nav-toggle-bar"></span>
@@ -35,10 +35,10 @@
   </div>
 </header>
 <div id="nav-mobile" class="nav-mobile">
-  <a href="/product/">Product</a>
-  <a href="/how-it-works/">How It Works</a>
-  <a href="/docs/">Docs</a>
-  <a href="/about/">About</a>
+  <a href="product/">Product</a>
+  <a href="how-it-works/">How It Works</a>
+  <a href="docs/">Docs</a>
+  <a href="about/">About</a>
   <a href="#waitlist" class="btn btn-sm">Join waitlist</a>
 </div>
 
@@ -50,7 +50,7 @@
     <p class="hero-sub reveal">VITARA adapts your meal and exercise plan to your food culture, where you live, and how your body naturally works — because generic plans don't work for most of the world.</p>
     <div class="hero-actions reveal">
       <a href="#waitlist" class="btn btn-primary">Join the waitlist</a>
-      <a href="/product/" class="btn btn-ghost">Learn how it works →</a>
+      <a href="product/" class="btn btn-ghost">Learn how it works →</a>
     </div>
     <div class="hero-rule reveal"></div>
   </div>
@@ -95,7 +95,7 @@
       <div>
         <p class="section-label">The approach</p>
         <h2 class="section-title-lg reveal">Three dimensions.<br>One adaptive plan.</h2>
-        <a href="/product/" class="btn btn-outline reveal" style="margin-top:2rem;">Explore the product →</a>
+        <a href="product/" class="btn btn-outline reveal" style="margin-top:2rem;">Explore the product →</a>
       </div>
       <div>
         <div class="dimensions">
@@ -302,7 +302,7 @@
       <p class="section-label">Founder</p>
       <h2 class="section-title-lg reveal">Akshay Kumar</h2>
       <p class="section-body reveal">MBA student at American University (Kogod School of Business). Technical and product background. South Asian — personally understands the problem VITARA solves.</p>
-      <p class="section-body reveal" style="margin-top:1rem;">Doing customer discovery before building, because the professor and the market both said to. <a href="/about/" style="color:var(--green);font-weight:600;">Read the full story →</a></p>
+      <p class="section-body reveal" style="margin-top:1rem;">Doing customer discovery before building, because the professor and the market both said to. <a href="about/" style="color:var(--green);font-weight:600;">Read the full story →</a></p>
     </div>
     <div>
       <p class="pullquote reveal" style="margin:0;">"Every health app I tried gave me plans written for someone else. VITARA is the app I wish existed."</p>
@@ -326,27 +326,29 @@
         <div class="form-group">
           <label class="form-label" for="wl-email">Email address <span style="color:var(--green)">*</span></label>
           <input class="form-input" type="email" id="wl-email" name="email" placeholder="you@example.com" required autocomplete="email" />
+          <p class="form-field-error" id="wl-email-error" style="display:none;font-size:0.8125rem;color:#C0392B;margin-top:0.3rem;">Please enter a valid email address.</p>
         </div>
         <div class="form-group">
           <label class="form-label" for="wl-culture">Your food culture</label>
           <select class="form-select" id="wl-culture" name="culture">
             <option value="" disabled selected>Select your primary food culture</option>
-            <option>South Asian (Indian, Pakistani, Bangladeshi, Sri Lankan)</option>
-            <option>West African (Nigerian, Ghanaian, Senegalese…)</option>
-            <option>Middle Eastern (Arabic, Persian, Turkish…)</option>
-            <option>Latin American (Mexican, Colombian, Brazilian…)</option>
-            <option>East Asian (Chinese, Japanese, Korean…)</option>
-            <option>Southeast Asian (Filipino, Thai, Vietnamese…)</option>
-            <option>East African (Ethiopian, Somali, Kenyan…)</option>
-            <option>Other / Mixed</option>
+            <option value="south-asian">South Asian (Indian, Pakistani, Bangladeshi, Sri Lankan)</option>
+            <option value="west-african">West African (Nigerian, Ghanaian, Senegalese…)</option>
+            <option value="middle-eastern">Middle Eastern (Arabic, Persian, Turkish…)</option>
+            <option value="latin-american">Latin American (Mexican, Colombian, Brazilian…)</option>
+            <option value="east-asian">East Asian (Chinese, Japanese, Korean…)</option>
+            <option value="southeast-asian">Southeast Asian (Filipino, Thai, Vietnamese…)</option>
+            <option value="east-african">East African (Ethiopian, Somali, Kenyan…)</option>
+            <option value="other">Other / Mixed</option>
           </select>
         </div>
-        <button type="submit" class="btn btn-primary" style="margin-top:0.5rem;">Join the waitlist</button>
+        <button type="submit" class="btn btn-primary" id="wl-submit" style="margin-top:0.5rem;">Join the waitlist</button>
       </form>
 
-      <p class="form-success" id="form-success" style="display:none;">
-        You're on the list. We'll be in touch — and we'll build the pilot around you. Welcome to VITARA.
-      </p>
+      <div id="form-success" style="display:none;padding:1.5rem;background:var(--green-tint);border:1px solid var(--green-light);border-radius:8px;margin-top:1rem;">
+        <p style="font-size:1rem;font-weight:600;color:var(--green);margin-bottom:0.4rem;">You're on the list.</p>
+        <p style="font-size:0.9375rem;line-height:1.65;color:var(--ink-2);">We'll reach out to the email you provided. You'll be among the first to try VITARA and help shape the pilot program.</p>
+      </div>
       <p style="margin-top:1.5rem;font-size:0.875rem;color:var(--ink-3);">Or email us directly: <a href="mailto:hello@vitara.health" style="color:var(--green);">hello@vitara.health</a></p>
     </div>
   </div>
@@ -354,12 +356,12 @@
 
 <footer>
   <div class="container footer-inner">
-    <a href="/" class="footer-logo">VITARA</a>
+    <a href="./" class="footer-logo">VITARA</a>
     <div class="footer-links">
-      <a href="/product/">Product</a>
-      <a href="/how-it-works/">How It Works</a>
-      <a href="/docs/">Docs</a>
-      <a href="/about/">About</a>
+      <a href="product/">Product</a>
+      <a href="how-it-works/">How It Works</a>
+      <a href="docs/">Docs</a>
+      <a href="about/">About</a>
       <a href="mailto:hello@vitara.health">Contact</a>
     </div>
     <p class="footer-note">© 2026 VITARA. Pre-product stage.</p>

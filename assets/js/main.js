@@ -82,27 +82,63 @@
   // ─── Waitlist form ───────────────────────────────────
   const form = document.getElementById('waitlist-form');
   if (form) {
+    const emailInput = document.getElementById('wl-email');
+    const emailError = document.getElementById('wl-email-error');
+    const submitBtn = document.getElementById('wl-submit');
+    const success = document.getElementById('form-success');
+
+    // Live validation: clear error as user types
+    if (emailInput && emailError) {
+      emailInput.addEventListener('input', () => {
+        emailError.style.display = 'none';
+        emailInput.style.borderColor = '';
+      });
+    }
+
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const btn = form.querySelector('button[type="submit"]');
-      const success = document.getElementById('form-success');
-      const emailInput = form.querySelector('input[type="email"]');
 
-      if (!emailInput || !emailInput.value.trim()) {
-        emailInput && emailInput.focus();
+      // Validate email
+      const emailVal = emailInput ? emailInput.value.trim() : '';
+      const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal);
+      if (!emailValid) {
+        if (emailInput) {
+          emailInput.style.borderColor = '#C0392B';
+          emailInput.focus();
+        }
+        if (emailError) emailError.style.display = 'block';
         return;
       }
 
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = 'Submitting…';
+      // Clear error state
+      if (emailError) emailError.style.display = 'none';
+      if (emailInput) emailInput.style.borderColor = '';
+
+      // Show loading state
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Adding you to the list…';
       }
 
-      // Simulate async — swap in success state
+      // Store locally and show success
       setTimeout(() => {
+        // Persist to sessionStorage so users know they signed up
+        try {
+          const entry = {
+            name: (document.getElementById('wl-name') || {}).value || '',
+            email: emailVal,
+            culture: (document.getElementById('wl-culture') || {}).value || '',
+            ts: new Date().toISOString()
+          };
+          const prev = JSON.parse(sessionStorage.getItem('vitara_wl') || '[]');
+          prev.push(entry);
+          sessionStorage.setItem('vitara_wl', JSON.stringify(prev));
+        } catch (_) {}
+
         form.style.display = 'none';
         if (success) success.style.display = 'block';
-      }, 800);
+        success && success.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 700);
     });
   }
 

@@ -1088,6 +1088,38 @@ pre code {
   color: var(--green);
 }
 
+/* ─── CARD + CARD-GRID (used in docs pages) ─────────── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+  margin: 1.5rem 0;
+}
+.card {
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+.card + .card { margin-top: 0; }
+
+/* ─── STAT ROW (used in docs pages) ──────────────────── */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.stat-row > div {
+  padding: 1.5rem;
+  border-right: 1px solid var(--rule);
+}
+.stat-row > div:last-child { border-right: none; }
+
 /* ─── FOOTER ───────────────────────────────────────── */
 footer {
   border-top: 1px solid var(--rule);
@@ -1124,6 +1156,12 @@ footer {
   transition: color 0.2s;
 }
 .footer-links a:hover { color: var(--ink-2); }
+
+/* footer-copy is an alias used in some doc pages */
+.footer-copy {
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+}
 
 /* ─── RESPONSIVE ───────────────────────────────────── */
 @media (max-width: 900px) {
