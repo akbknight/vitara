@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Security &amp; Access Document — VITARA Docs</title>
+  <meta name="description" content="VITARA security and access controls: authentication design, user roles, data classification, row-level security, error handling, and pre-launch checklist." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='14' fill='%231A5C3F'/><text x='50' y='76' font-family='Georgia,serif' font-size='66' font-weight='600' fill='white' text-anchor='middle'>V</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+</head>
+<body>
+
+<header id="nav">
+  <div class="container nav-inner">
+    <a href="../../" class="logo">VITARA</a>
+    <nav class="nav-links" aria-label="Site navigation">
+      <a href="../../product/" class="nav-link">Product</a>
+      <a href="../../how-it-works/" class="nav-link">How It Works</a>
+      <a href="../../docs/" class="nav-link active">Docs</a>
+      <a href="../../about/" class="nav-link">About</a>
+    </nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+    </button>
+    <a href="../../#waitlist" class="btn btn-sm nav-desktop-cta">Join waitlist</a>
+  </div>
+</header>
+<div id="nav-mobile" class="nav-mobile">
+  <a href="../../product/">Product</a>
+  <a href="../../how-it-works/">How It Works</a>
+  <a href="../../docs/">Docs</a>
+  <a href="../../about/">About</a>
+  <a href="../../#waitlist" class="btn btn-sm">Join waitlist</a>
+</div>
+
+<main class="docs-main">
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <p class="docs-sidebar-title">Documentation</p>
+      <nav class="docs-nav" aria-label="Documentation">
+        <a href="../" class="docs-nav-item">Overview</a>
+        <a href="../prd/" class="docs-nav-item">Product Requirements</a>
+        <a href="../technical-architecture/" class="docs-nav-item">Technical Architecture</a>
+        <a href="../security-access/" class="docs-nav-item active">Security &amp; Access</a>
+        <a href="../frontend-spec/" class="docs-nav-item">Frontend Specification</a>
+        <a href="../feature-tickets/" class="docs-nav-item">Feature Tickets</a>
+      </nav>
+    </aside>
+
+    <div class="docs-content">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../" class="breadcrumb-item">Home</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="../" class="breadcrumb-item">Docs</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item active">Security &amp; Access</span>
+      </nav>
+
+      <div class="docs-meta">
+        <span class="badge badge-next">v0.1 · Pre-development</span>
+        <span>Last updated: June 2026</span>
+        <span>Author: VITARA Engineering</span>
+      </div>
+
+      <h1 class="page-title">Security &amp; Access Document</h1>
+      <p class="lead">Health data is the most personal information a user can share with an app. This document specifies VITARA's authentication model, data classification scheme, access controls, and the edge cases that must be handled before any code ships to users.</p>
+
+      <div class="toc">
+        <p class="docs-sidebar-title">On this page</p>
+        <ol>
+          <li><a href="#executive-summary">Executive Summary</a></li>
+          <li><a href="#auth-design">Authentication Design</a></li>
+          <li><a href="#roles">User Roles &amp; Permissions</a></li>
+          <li><a href="#data-classification">Data Classification</a></li>
+          <li><a href="#row-level-security">Row-Level Security</a></li>
+          <li><a href="#access-matrix">Access Control Matrix</a></li>
+          <li><a href="#error-handling">Error Handling Guide</a></li>
+          <li><a href="#privacy">Privacy Considerations</a></li>
+          <li><a href="#health-data-security">Health Data Security</a></li>
+          <li><a href="#abuse-prevention">Abuse Prevention</a></li>
+          <li><a href="#edge-cases">Edge Cases Checklist</a></li>
+          <li><a href="#prelaunch-checklist">Pre-Launch Security Checklist</a></li>
+        </ol>
+      </div>
+
+      <!-- EXECUTIVE SUMMARY -->
+      <h2 class="section-title" id="executive-summary">Executive Summary</h2>
+      <p class="body-text">VITARA stores ethnicity, health conditions, medications, sleep patterns, dietary practices, and fitness data. This is among the most sensitive personal data a consumer app can hold — not because of a legal framework, but because of the real harm that could result from a breach: discriminatory use by insurers, employers, or immigration authorities; social harm from exposure of religious dietary practices; and the deeply personal nature of health struggles. Our security posture is built on four principles: user data is inaccessible to anyone other than the user (enforced at the database layer, not just the application layer); health data never leaves VITARA's infrastructure to third parties; every sensitive action is auditable; and security degradation fails closed (a broken token means no access, not degraded access).</p>
+
+      <div class="callout callout-tip">
+        <strong>Health Data Note</strong><br />
+        VITARA is not a medical device and does not claim HIPAA compliance. We are not a covered entity under HIPAA, and our users are not patients receiving medical treatment. However, we voluntarily apply PHI-adjacent security practices — AES-256 at rest, TLS 1.3 in transit, row-level security, AWS KMS for key management, and no third-party health data sharing — because the data we hold warrants that level of care regardless of legal obligation. This distinction must be communicated clearly in our privacy policy and terms of service.
+      </div>
+
+      <!-- AUTH DESIGN -->
+      <h2 class="section-title" id="auth-design">Authentication Design</h2>
+      <p class="body-text">VITARA uses a stateless JWT architecture with short-lived access tokens and rotating refresh tokens. The design is optimized for mobile clients where background token refresh is possible and the blast radius of a stolen token must be minimized.</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <span class="eyebrow">Access Token</span>
+          <p class="body-text"><strong>15-minute expiry.</strong> Signed with HMAC-SHA256. Contains: user_id, subscription_tier, issued_at, expires_at. Short expiry means a stolen access token is useless within 15 minutes without the refresh token. Stored in memory (Riverpod state) on mobile — never written to disk.</p>
+        </div>
+        <div class="card">
+          <span class="eyebrow">Refresh Token</span>
+          <p class="body-text"><strong>30-day expiry, rotation on each use.</strong> Stored in flutter_secure_storage (Keychain on iOS, Keystore on Android). When a refresh request arrives, the server issues a new refresh token and invalidates the old one in Redis. If the old token is presented again (stolen token reuse), both are invalidated and the user is logged out.</p>
+        </div>
+        <div class="card">
+          <span class="eyebrow">Biometric Lock</span>
+          <p class="body-text"><strong>App-level Face ID / fingerprint.</strong> A separate 4-hour app-lock PIN or biometric challenge gates re-entry into the app after it's been backgrounded. This is enforced client-side using flutter_local_auth; it does not issue new tokens — it gates access to the stored refresh token.</p>
+        </div>
+        <div class="card">
+          <span class="eyebrow">Email Verification</span>
+          <p class="body-text"><strong>Required before first plan generation.</strong> Registration creates a user with is_verified=false. All routes except /auth/* require is_verified=true. Verification link expires after 24 hours. Resend is rate-limited to 3 per hour per email.</p>
+        </div>
+      </div>
+
+      <div class="callout callout-warning">
+        <strong>Token Storage — Non-negotiable</strong><br />
+        Never store JWT tokens (access or refresh) in Flutter's SharedPreferences, AsyncStorage (React Native pattern), or any location accessible to other apps. Always use flutter_secure_storage which maps to iOS Keychain and Android Keystore. These storage locations are encrypted by the OS and are inaccessible to other applications. A token in SharedPreferences can be read by any app with file system access on a rooted device. A token in Keychain cannot.
+      </div>
+
+      <!-- ROLES -->
+      <h2 class="section-title" id="roles">User Roles &amp; Permissions</h2>
+      <table class="comparison-table">
+        <thead>
+          <tr><th>Role</th><th>Description</th><th>Can Do</th><th>Cannot Do</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Anonymous</strong></td>
+            <td>Unauthenticated visitor (no account)</td>
+            <td>View marketing pages; initiate registration; request password reset</td>
+            <td>Access any API route; view any user data; generate any plan</td>
+          </tr>
+          <tr>
+            <td><strong>Free User</strong></td>
+            <td>Registered and email-verified; no paid subscription</td>
+            <td>Complete onboarding; generate one initial plan; view plan (read-only after trial expires); access 3 AI coaching messages per day; manual food logging; basic health dashboard</td>
+            <td>Regenerate plan; access full AI coaching; food photo recognition; wearable sync; data export</td>
+          </tr>
+          <tr>
+            <td><strong>Plus Subscriber</strong><br /><span class="tag-row"><span class="tag">$12/mo</span></span></td>
+            <td>Active paying subscriber on Plus tier</td>
+            <td>Everything in Free; unlimited AI coaching; full plan generation + weekly refresh; wearable sync (HealthKit/Health Connect); food photo recognition; contextual daily brief; hydration tracking</td>
+            <td>Lab result upload; doctor report generation; priority support (Pro only)</td>
+          </tr>
+          <tr>
+            <td><strong>Pro Subscriber</strong><br /><span class="tag-row"><span class="tag">$25/mo</span></span></td>
+            <td>Active paying subscriber on Pro tier</td>
+            <td>Everything in Plus; lab result upload and AI interpretation; doctor-ready health summary export; priority support response time; extended health history (2 years vs. 90 days)</td>
+            <td>Admin panel; other users' data; internal analytics</td>
+          </tr>
+          <tr>
+            <td><strong>Admin</strong></td>
+            <td>Internal VITARA team member</td>
+            <td>Access aggregate analytics (no individual health data); manage subscription tiers; view error logs; force-refresh AI prompts; send push notification campaigns</td>
+            <td>View any individual user's health data, meals, or coaching sessions; access S3 objects containing user photos or lab results without explicit user consent and audit log entry</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- DATA CLASSIFICATION -->
+      <h2 class="section-title" id="data-classification">Data Classification</h2>
+      <table class="comparison-table">
+        <thead>
+          <tr><th>Data Type</th><th>Classification</th><th>Storage</th><th>Encryption</th><th>Access</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Email address, name, timezone</td>
+            <td>Standard Personal</td>
+            <td>PostgreSQL users / user_profiles</td>
+            <td>AES-256 at rest (RDS encryption)</td>
+            <td>User only; admin for account support only</td>
+          </tr>
+          <tr>
+            <td>Health metrics (sleep, HRV, steps, weight)</td>
+            <td>Sensitive (PHI-adjacent)</td>
+            <td>TimescaleDB health_metrics hypertable</td>
+            <td>AES-256 at rest; TLS 1.3 in transit; row-level security</td>
+            <td>User only; no admin access without explicit audit log</td>
+          </tr>
+          <tr>
+            <td>Ethnicity, health conditions, medications</td>
+            <td>Highly Sensitive</td>
+            <td>PostgreSQL user_profiles (JSONB for medications)</td>
+            <td>AES-256 at rest; column-level encryption for medications field via pgcrypto</td>
+            <td>User only; never exposed to AI layer in raw form — passed as anonymized profile context</td>
+          </tr>
+          <tr>
+            <td>Food photos</td>
+            <td>Sensitive</td>
+            <td>S3 private bucket (vitara-user-uploads)</td>
+            <td>S3 SSE-KMS; CloudFront signed URLs (1-hour expiry)</td>
+            <td>User only via signed URLs; no public access; not retained after GPT-4o Vision processing unless user chooses</td>
+          </tr>
+          <tr>
+            <td>Lab result images</td>
+            <td>Very Sensitive</td>
+            <td>S3 private bucket (vitara-lab-results — separate bucket)</td>
+            <td>S3 SSE-KMS with dedicated CMK; signed URLs (30-minute expiry)</td>
+            <td>User only; separate bucket policy; no cross-account access; CloudTrail logged on every access</td>
+          </tr>
+          <tr>
+            <td>OAuth access/refresh tokens (wearables)</td>
+            <td>Highly Sensitive (credential)</td>
+            <td>PostgreSQL user_integrations — encrypted columns</td>
+            <td>AES-256 via AWS KMS envelope encryption; decrypted only in memory at sync time</td>
+            <td>Automated sync task only; never returned to client; never logged</td>
+          </tr>
+          <tr>
+            <td>Coaching session history</td>
+            <td>Sensitive (PHI-adjacent)</td>
+            <td>PostgreSQL coaching_sessions (JSONB messages)</td>
+            <td>AES-256 at rest</td>
+            <td>User only; messages content not indexed or searchable by admins</td>
+          </tr>
+          <tr>
+            <td>Aggregate analytics (anonymized)</td>
+            <td>Internal</td>
+            <td>Separate analytics DB (not mixed with user data)</td>
+            <td>Standard at-rest encryption</td>
+            <td>Internal team; no user-identifiable fields</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ROW-LEVEL SECURITY -->
+      <h2 class="section-title" id="row-level-security">Row-Level Security</h2>
+      <p class="body-text">PostgreSQL row-level security (RLS) is enabled on all user data tables. This means the database itself enforces that a query for health metrics can only return rows where <code>user_id = current_setting('app.current_user_id')</code> — even if the application layer makes a programming error and omits the user_id filter. RLS is the last line of defense against cross-user data leakage.</p>
+
+      <pre class="code-block">-- Example RLS policy on health_metrics
+ALTER TABLE health_metrics ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY user_isolation ON health_metrics
+  USING (user_id = current_setting('app.current_user_id')::uuid);
+
+-- Set in every database session after authentication:
+SET LOCAL app.current_user_id = '&lt;authenticated-user-uuid&gt;';
+</pre>
+
+      <p class="body-text">The same RLS policy pattern is applied to: <code>user_profiles</code>, <code>health_metrics</code>, <code>meals</code>, <code>coaching_sessions</code>, <code>lab_results</code>, and <code>user_integrations</code>. The <code>users</code> table has a more restricted policy: users can read their own row but not write subscription_tier directly (only the RevenueCat webhook handler, running as a privileged role, can update that column).</p>
+
+      <p class="body-text">No admin role can query individual health data through the application API. Admin tooling accesses only the analytics database, which contains aggregated, anonymized data. Any legitimate support access to individual user data (e.g., investigating a bug report) requires explicit approval, goes through a separate read-only console with full CloudTrail audit logging, and the user is notified.</p>
+
+      <!-- ACCESS MATRIX SVG -->
+      <h2 class="section-title" id="access-matrix">Access Control Matrix</h2>
+      <p class="body-text">Visual summary of role capabilities. Green check = full access, gray dash = no access, star = limited access.</p>
+
+      <svg viewBox="0 0 820 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Access control matrix: roles vs. capabilities" style="width:100%;height:auto;display:block;margin:24px 0;">
+        <!-- Column headers -->
+        <text x="170" y="22" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">View own profile</text>
+        <text x="280" y="22" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">Log food</text>
+        <text x="380" y="22" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">AI coaching</text>
+        <text x="480" y="22" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">Full plan gen</text>
+        <text x="580" y="22" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">Wearable sync</text>
+        <text x="680" y="22" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">Data export</text>
+        <text x="780" y="22" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">Admin panel</text>
+
+        <!-- Row labels -->
+        <text x="5" y="65" font-family="Plus Jakarta Sans, sans-serif" font-size="9" font-weight="600" fill="#111110">Anonymous</text>
+        <text x="5" y="115" font-family="Plus Jakarta Sans, sans-serif" font-size="9" font-weight="600" fill="#111110">Free User</text>
+        <text x="5" y="165" font-family="Plus Jakarta Sans, sans-serif" font-size="9" font-weight="600" fill="#111110">Plus ($12)</text>
+        <text x="5" y="215" font-family="Plus Jakarta Sans, sans-serif" font-size="9" font-weight="600" fill="#111110">Pro ($25)</text>
+        <text x="5" y="258" font-family="Plus Jakarta Sans, sans-serif" font-size="9" font-weight="600" fill="#111110">Admin</text>
+
+        <!-- Row bands -->
+        <rect x="130" y="42" width="680" height="36" rx="4" fill="#F8F7F3"/>
+        <rect x="130" y="92" width="680" height="36" rx="4" fill="white"/>
+        <rect x="130" y="142" width="680" height="36" rx="4" fill="#F8F7F3"/>
+        <rect x="130" y="192" width="680" height="36" rx="4" fill="white"/>
+        <rect x="130" y="234" width="680" height="36" rx="4" fill="#F8F7F3"/>
+
+        <!-- Anonymous row: all dash -->
+        <text x="170" y="65" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#8C8C88" text-anchor="middle">—</text>
+        <text x="280" y="65" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#8C8C88" text-anchor="middle">—</text>
+        <text x="380" y="65" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#8C8C88" text-anchor="middle">—</text>
+        <text x="480" y="65" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#8C8C88" text-anchor="middle">—</text>
+        <text x="580" y="65" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#8C8C88" text-anchor="middle">—</text>
+        <text x="680" y="65" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#8C8C88" text-anchor="middle">—</text>
+        <text x="780" y="65" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#8C8C88" text-anchor="middle">—</text>
+
+        <!-- Free row: check, check, limited, limited, dash, dash, dash -->
+        <text x="170" y="115" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#1A5C3F" text-anchor="middle">✓</text>
+        <text x="280" y="115" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#1A5C3F" text-anchor="middle">✓</text>
+        <text x="380" y="115" font-family="Plus Jakarta Sans, sans-serif" font-size="13" fill="#E8A020" text-anchor="middle">★ 3/day</text>
+        <text x="480" y="115" font-family="Plus Jakarta Sans, sans-serif" font-size="13" fill="#E8A020" text-anchor="middle">★ once</text>
+        <text x="580" y="115" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#8C8C88" text-anchor="middle">—</text>
+        <text x="680" y="115" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#8C8C88" text-anchor="middle">—</text>
+        <text x="780" y="115" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#8C8C88" text-anchor="middle">—</text>
+
+        <!-- Plus row: check, check, check, check, check, dash, dash -->
+        <text x="170" y="165" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#1A5C3F" text-anchor="middle">✓</text>
+        <text x="280" y="165" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#1A5C3F" text-anchor="middle">✓</text>
+        <text x="380" y="165" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#1A5C3F" text-anchor="middle">✓</text>
+        <text x="480" y="165" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#1A5C3F" text-anchor="middle">✓</text>
+        <text x="580" y="165" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#1A5C3F" text-anchor="middle">✓</text>
+        <text x="680" y="165" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#8C8C88" text-anchor="middle">—</text>
+        <text x="780" y="165" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#8C8C88" text-anchor="middle">—</text>
+
+        <!-- Pro row: all check except admin -->
+        <text x="170" y="215" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#1A5C3F" text-anchor="middle">✓</text>
+        <text x="280" y="215" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#1A5C3F" text-anchor="middle">✓</text>
+        <text x="380" y="215" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#1A5C3F" text-anchor="middle">✓</text>
+        <text x="480" y="215" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#1A5C3F" text-anchor="middle">✓</text>
+        <text x="580" y="215" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#1A5C3F" text-anchor="middle">✓</text>
+        <text x="680" y="215" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#1A5C3F" text-anchor="middle">✓</text>
+        <text x="780" y="215" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#8C8C88" text-anchor="middle">—</text>
+
+        <!-- Admin row: dash, dash, dash, dash, dash, dash, check -->
+        <text x="170" y="258" font-family="Plus Jakarta Sans, sans-serif" font-size="13" fill="#8C8C88" text-anchor="middle">own only</text>
+        <text x="280" y="258" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#8C8C88" text-anchor="middle">—</text>
+        <text x="380" y="258" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#8C8C88" text-anchor="middle">—</text>
+        <text x="480" y="258" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#8C8C88" text-anchor="middle">—</text>
+        <text x="580" y="258" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#8C8C88" text-anchor="middle">—</text>
+        <text x="680" y="258" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#8C8C88" text-anchor="middle">—</text>
+        <text x="780" y="258" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#1A5C3F" text-anchor="middle">✓</text>
+
+        <!-- Legend -->
+        <text x="134" y="286" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#1A5C3F">✓ = full access</text>
+        <text x="250" y="286" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#E8A020">★ = limited access</text>
+        <text x="380" y="286" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#8C8C88">— = no access</text>
+      </svg>
+
+      <!-- ERROR HANDLING -->
+      <h2 class="section-title" id="error-handling">Error Handling Guide</h2>
+      <table class="comparison-table">
+        <thead>
+          <tr><th>Error Type</th><th>HTTP Status</th><th>User-facing Message</th><th>Developer Action</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Invalid credentials</td>
+            <td>401</td>
+            <td>"Email or password is incorrect."</td>
+            <td>Increment failed_login_count for the email; do not specify which field is wrong (enumeration prevention)</td>
+          </tr>
+          <tr>
+            <td>Expired access token</td>
+            <td>401 with code: TOKEN_EXPIRED</td>
+            <td>Silent — mobile client intercepts 401 and attempts refresh automatically</td>
+            <td>Client must retry with refresh token before showing any error to user</td>
+          </tr>
+          <tr>
+            <td>Expired/invalid refresh token</td>
+            <td>401 with code: SESSION_EXPIRED</td>
+            <td>"Your session has expired. Please sign in again."</td>
+            <td>Client clears stored tokens, navigates to login screen; no automatic retry</td>
+          </tr>
+          <tr>
+            <td>Missing subscription</td>
+            <td>403 with code: SUBSCRIPTION_REQUIRED</td>
+            <td>"This feature requires a Plus subscription. Upgrade to continue."</td>
+            <td>Include feature_name in the error body so the client can show a targeted paywall</td>
+          </tr>
+          <tr>
+            <td>Rate limit exceeded</td>
+            <td>429</td>
+            <td>"You've reached your request limit. Please wait a moment."</td>
+            <td>Include Retry-After header with seconds until limit resets; log for abuse monitoring</td>
+          </tr>
+          <tr>
+            <td>Accessing another user's data</td>
+            <td>404 (not 403)</td>
+            <td>"Not found."</td>
+            <td>Return 404 not 403 — do not confirm the resource exists; log as a security event in CloudWatch</td>
+          </tr>
+          <tr>
+            <td>Email not verified</td>
+            <td>403 with code: EMAIL_NOT_VERIFIED</td>
+            <td>"Please verify your email address to continue. Check your inbox."</td>
+            <td>Offer resend link; rate-limit resend to 3 per hour per email</td>
+          </tr>
+          <tr>
+            <td>AI service unavailable</td>
+            <td>503</td>
+            <td>"Your health coach is temporarily unavailable. Try again in a moment."</td>
+            <td>Retry with exponential backoff (1s, 2s, 4s); after 3 failures, return cached last response + unavailability message</td>
+          </tr>
+          <tr>
+            <td>Wearable integration token expired</td>
+            <td>400 with code: INTEGRATION_REAUTH_REQUIRED</td>
+            <td>"Your [Fitbit] connection needs to be reconnected. Tap to fix."</td>
+            <td>Set integration status = 'reauth_required'; trigger push notification; do not silently fail sync</td>
+          </tr>
+          <tr>
+            <td>Malformed input</td>
+            <td>422</td>
+            <td>Field-level validation errors from Pydantic</td>
+            <td>Return structured error body with field names and constraint violations; never expose stack traces</td>
+          </tr>
+          <tr>
+            <td>Internal server error</td>
+            <td>500</td>
+            <td>"Something went wrong on our end. We've been notified."</td>
+            <td>Sentry captures exception with full context; do not include stack trace in response body</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- PRIVACY -->
+      <h2 class="section-title" id="privacy">Privacy Considerations</h2>
+      <ul class="body-text">
+        <li><strong>No third-party health data sharing.</strong> Health metrics, meals, coaching conversations, and profile data never leave VITARA's infrastructure. They are not sold, rented, or shared with advertisers, data brokers, insurance companies, employers, or government agencies.</li>
+        <li><strong>AI processing transparency.</strong> When user health data is sent to the Claude API, this must be disclosed in the privacy policy. Anthropic's API terms prohibit using API inputs to train models, but the privacy policy must state explicitly that health data is sent to a third-party AI provider for processing.</li>
+        <li><strong>Full data export (right to portability).</strong> Users can request a complete export of all their data: profile, health metrics, meals, coaching sessions, and lab results. The export is generated as a JSON file and delivered via a signed S3 URL. Export requests are processed within 72 hours.</li>
+        <li><strong>Right to deletion.</strong> Account deletion requests initiate a 30-day soft-delete period (data is not accessible but not yet purged). Hard deletion occurs on day 31: all PostgreSQL rows, S3 objects (food photos, lab results), and ChromaDB embeddings containing the user's ID are permanently deleted. A confirmation email is sent when deletion completes.</li>
+        <li><strong>GDPR / CCPA applicability.</strong> VITARA serves users in the UK and EU (GDPR) and California (CCPA). We are a data controller. The privacy policy must include: lawful basis for processing (contract performance + legitimate interest), data subject rights (access, rectification, erasure, portability), data retention periods, and a DPA contact.</li>
+        <li><strong>Analytics anonymization.</strong> Any usage analytics (feature engagement, session lengths, plan completion rates) are anonymized before storage in the analytics database. No personal identifiers appear in any analytics pipeline.</li>
+      </ul>
+
+      <!-- HEALTH DATA SECURITY -->
+      <h2 class="section-title" id="health-data-security">Health Data Security Specifics</h2>
+      <p class="body-text">The medications JSONB column in user_profiles is encrypted at the column level using pgcrypto's <code>pgp_sym_encrypt</code> with a key derived from AWS KMS. This means even a direct database query by a DBA cannot read medication names without the KMS key. The same column-level encryption applies to the raw OCR text from lab result images before it is processed.</p>
+
+      <p class="body-text">Food photos uploaded for AI recognition are processed by GPT-4o Vision and then deleted from S3 within 24 hours unless the user explicitly saves the log entry. Lab result images are stored with a 1-year retention policy and accessed via 30-minute signed URLs only. Both bucket types have S3 Object Lock enabled on production (WORM — write once, read many) for a 72-hour grace period, preventing accidental or malicious immediate deletion.</p>
+
+      <!-- ABUSE PREVENTION -->
+      <h2 class="section-title" id="abuse-prevention">Abuse Prevention</h2>
+      <ul class="body-text">
+        <li><strong>Auth endpoint rate limiting:</strong> POST /auth/login and POST /auth/register are limited to 10 requests per IP per minute via AWS WAF. After 5 failed login attempts for a single email within 10 minutes, the account is temporarily locked for 30 minutes and the user receives an email alert.</li>
+        <li><strong>AI chat rate limiting:</strong> Free users are limited to 3 AI messages per day. Plus/Pro users are limited to 100 messages per day (well above normal usage; exists to prevent API cost abuse). Per-user token budgets enforce a monthly cap.</li>
+        <li><strong>Device fingerprinting on suspicious login:</strong> If a login comes from a new device + new country combination, require email re-verification before issuing tokens. Use a lightweight fingerprint (IP, user-agent hash, timezone offset) stored with the session.</li>
+        <li><strong>Upload size limits:</strong> Food photos capped at 10MB; lab result images capped at 25MB. Enforced at the API layer before S3 upload. MIME type validation: only image/jpeg and image/png accepted for both.</li>
+        <li><strong>SQL injection:</strong> All database access through parameterized queries via SQLAlchemy ORM. No raw SQL string concatenation anywhere in the codebase.</li>
+      </ul>
+
+      <!-- EDGE CASES -->
+      <h2 class="section-title" id="edge-cases">Edge Cases Checklist</h2>
+      <p class="body-text">These 25 edge cases must be handled in code — tested and verified — before any public launch. Each represents a real failure mode observed in health apps.</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <strong class="body-text">Authentication</strong>
+          <ul class="body-text" style="margin:0;padding-left:1.1rem;">
+            <li>Refresh token presented after account deletion — must reject with 401</li>
+            <li>Two devices simultaneously refresh the same token — first wins; second must re-authenticate</li>
+            <li>User changes email — old refresh tokens must be invalidated</li>
+            <li>User changes password — all existing sessions must be terminated</li>
+            <li>Biometric authentication fails 5 times — app must lock and require PIN</li>
+            <li>JWT issued with wrong subscription_tier — always re-read tier from DB, not JWT claim, for gated routes</li>
+          </ul>
+        </div>
+        <div class="card">
+          <strong class="body-text">Health Data</strong>
+          <ul class="body-text" style="margin:0;padding-left:1.1rem;">
+            <li>Wearable sync sends duplicate timestamps — deduplicate by (user_id, time, metric_type) on UPSERT</li>
+            <li>User revokes HealthKit permission mid-session — handle gracefully, show "reconnect" prompt</li>
+            <li>Health metric value is null or out of range (e.g. HR=0) — reject at validation layer, never store</li>
+            <li>TimescaleDB partition missing for future time (clock skew) — write still succeeds, chunk created automatically</li>
+            <li>User logs meal with future timestamp — accept but flag; affects daily calorie calculations</li>
+          </ul>
+        </div>
+        <div class="card">
+          <strong class="body-text">AI &amp; Plans</strong>
+          <ul class="body-text" style="margin:0;padding-left:1.1rem;">
+            <li>Claude API returns malformed JSON in plan generation — retry once with explicit JSON schema instruction; if fails again, return last cached plan with "updating" message</li>
+            <li>User's profile is empty (skipped onboarding) — block /ai/generate-plan with 400 ONBOARDING_REQUIRED</li>
+            <li>Context window too large (user with 6 months of history) — implement sliding window: last 7 days of metrics + weekly aggregates beyond that</li>
+            <li>User sets both vegetarian and "I eat chicken" preferences — detect contradiction in validation layer; ask user to clarify at profile edit</li>
+          </ul>
+        </div>
+        <div class="card">
+          <strong class="body-text">Subscriptions &amp; Data</strong>
+          <ul class="body-text" style="margin:0;padding-left:1.1rem;">
+            <li>RevenueCat webhook arrives out of order (renewal before expiry) — always take the event with the latest original_purchase_date, not arrival order</li>
+            <li>User requests data export during deletion grace period — still process export; user has right to their data until hard delete</li>
+            <li>S3 signed URL expires before user opens it — regenerate on-demand; never cache signed URLs client-side beyond 30 minutes</li>
+            <li>User uploads non-food image for food recognition — GPT-4o Vision returns "no food detected"; handle gracefully, prompt to retake</li>
+            <li>App crashed mid-onboarding — profile is partial; resume from last completed step; never generate a plan from an incomplete profile</li>
+            <li>User in a country where the app isn't available (future) — return 403 GEO_RESTRICTED with clear message; do not silently fail</li>
+            <li>Time zone change (user moves country) — update timezone in profile; recalculate all scheduled Celery tasks for that user</li>
+            <li>Ramadan mode: user sets Ramadan active — meal type options shift to sehri/iftar; caloric targets adjust for compressed eating window</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- PRE-LAUNCH CHECKLIST -->
+      <h2 class="section-title" id="prelaunch-checklist">Pre-Launch Security Checklist</h2>
+      <table class="comparison-table">
+        <thead>
+          <tr><th>Category</th><th>Checklist Item</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Auth</td><td>JWT secret is minimum 64 characters, randomly generated, stored in AWS Secrets Manager</td><td><span class="badge badge-future">Pending</span></td></tr>
+          <tr><td>Auth</td><td>Refresh token rotation tested: reuse of old token invalidates both tokens</td><td><span class="badge badge-future">Pending</span></td></tr>
+          <tr><td>Auth</td><td>Account lockout after 5 failed logins tested and verified with email alert</td><td><span class="badge badge-future">Pending</span></td></tr>
+          <tr><td>Transport</td><td>TLS 1.3 enforced on ALB; TLS 1.0/1.1 explicitly disabled</td><td><span class="badge badge-future">Pending</span></td></tr>
+          <tr><td>Transport</td><td>HSTS header with max-age=31536000 set on all API responses</td><td><span class="badge badge-future">Pending</span></td></tr>
+          <tr><td>Database</td><td>Row-level security policies verified: user A cannot query user B's health_metrics</td><td><span class="badge badge-future">Pending</span></td></tr>
+          <tr><td>Database</td><td>medications column encrypted with pgcrypto; KMS key rotation policy set (annual)</td><td><span class="badge badge-future">Pending</span></td></tr>
+          <tr><td>Storage</td><td>S3 bucket public access block enabled on all buckets</td><td><span class="badge badge-future">Pending</span></td></tr>
+          <tr><td>Storage</td><td>S3 signed URL expiry tested: expired URL returns 403</td><td><span class="badge badge-future">Pending</span></td></tr>
+          <tr><td>AI</td><td>No raw PII (name, email, DOB) included in Claude API prompts; only anonymized health context</td><td><span class="badge badge-future">Pending</span></td></tr>
+          <tr><td>AI</td><td>AI response sanitization: strip any user data that might appear in hallucinated outputs before returning to client</td><td><span class="badge badge-future">Pending</span></td></tr>
+          <tr><td>Rate Limiting</td><td>WAF rules active on auth endpoints; tested with burst traffic simulation</td><td><span class="badge badge-future">Pending</span></td></tr>
+          <tr><td>Privacy</td><td>Privacy policy reviewed by counsel; GDPR lawful basis documented</td><td><span class="badge badge-future">Pending</span></td></tr>
+          <tr><td>Privacy</td><td>Data deletion flow tested end-to-end: all rows, S3 objects, and embeddings purged after 30 days</td><td><span class="badge badge-future">Pending</span></td></tr>
+          <tr><td>Mobile</td><td>flutter_secure_storage confirmed writing to Keychain (iOS) and Keystore (Android) — not SharedPreferences</td><td><span class="badge badge-future">Pending</span></td></tr>
+          <tr><td>Monitoring</td><td>Sentry alerts configured for error rate spike (&gt;1% 5xx in 5 minutes)</td><td><span class="badge badge-future">Pending</span></td></tr>
+          <tr><td>Monitoring</td><td>CloudTrail audit log active for KMS key usage and S3 lab result bucket access</td><td><span class="badge badge-future">Pending</span></td></tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <a href="../../" class="footer-logo">VITARA</a>
+    <p class="footer-copy">&copy; 2026 VITARA. Adaptive health coaching.</p>
+    <nav class="footer-links">
+      <a href="../../product/">Product</a>
+      <a href="../../docs/">Docs</a>
+      <a href="../../about/">About</a>
+      <a href="mailto:hello@vitara.health">Contact</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../../assets/js/main.js"></script>
+</body>
+</html>

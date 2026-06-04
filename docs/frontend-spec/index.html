@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frontend Specification Document — VITARA Docs</title>
+  <meta name="description" content="VITARA frontend specification: design philosophy, color system, typography, Flutter component library, spacing, motion principles, accessibility, and API integration spec." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='14' fill='%231A5C3F'/><text x='50' y='76' font-family='Georgia,serif' font-size='66' font-weight='600' fill='white' text-anchor='middle'>V</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+</head>
+<body>
+
+<header id="nav">
+  <div class="container nav-inner">
+    <a href="../../" class="logo">VITARA</a>
+    <nav class="nav-links" aria-label="Site navigation">
+      <a href="../../product/" class="nav-link">Product</a>
+      <a href="../../how-it-works/" class="nav-link">How It Works</a>
+      <a href="../../docs/" class="nav-link active">Docs</a>
+      <a href="../../about/" class="nav-link">About</a>
+    </nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+    </button>
+    <a href="../../#waitlist" class="btn btn-sm nav-desktop-cta">Join waitlist</a>
+  </div>
+</header>
+<div id="nav-mobile" class="nav-mobile">
+  <a href="../../product/">Product</a>
+  <a href="../../how-it-works/">How It Works</a>
+  <a href="../../docs/">Docs</a>
+  <a href="../../about/">About</a>
+  <a href="../../#waitlist" class="btn btn-sm">Join waitlist</a>
+</div>
+
+<main class="docs-main">
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <p class="docs-sidebar-title">Documentation</p>
+      <nav class="docs-nav" aria-label="Documentation">
+        <a href="../" class="docs-nav-item">Overview</a>
+        <a href="../prd/" class="docs-nav-item">Product Requirements</a>
+        <a href="../technical-architecture/" class="docs-nav-item">Technical Architecture</a>
+        <a href="../security-access/" class="docs-nav-item">Security &amp; Access</a>
+        <a href="../frontend-spec/" class="docs-nav-item active">Frontend Specification</a>
+        <a href="../feature-tickets/" class="docs-nav-item">Feature Tickets</a>
+      </nav>
+    </aside>
+
+    <div class="docs-content">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../" class="breadcrumb-item">Home</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="../" class="breadcrumb-item">Docs</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item active">Frontend Specification</span>
+      </nav>
+
+      <div class="docs-meta">
+        <span class="badge badge-next">v0.1 · Pre-development</span>
+        <span>Last updated: June 2026</span>
+        <span>Author: VITARA Design &amp; Engineering</span>
+      </div>
+
+      <h1 class="page-title">Frontend Specification Document</h1>
+      <p class="lead">This document covers both VITARA surfaces: the marketing website (web) and the Flutter mobile app. Design tokens, component contracts, spacing rules, motion principles, and third-party integration specifications are defined here so that design and engineering can work from a single source of truth.</p>
+
+      <div class="toc">
+        <p class="docs-sidebar-title">On this page</p>
+        <ol>
+          <li><a href="#executive-summary">Executive Summary</a></li>
+          <li><a href="#design-philosophy">Design Philosophy</a></li>
+          <li><a href="#color-system">Color System</a></li>
+          <li><a href="#typography">Typography System</a></li>
+          <li><a href="#components">Component Library (Mobile)</a></li>
+          <li><a href="#spacing">Spacing System</a></li>
+          <li><a href="#layout">Layout System</a></li>
+          <li><a href="#motion">Motion Principles</a></li>
+          <li><a href="#accessibility">Accessibility Requirements</a></li>
+          <li><a href="#api-integrations">API Integration Spec</a></li>
+        </ol>
+      </div>
+
+      <!-- EXECUTIVE SUMMARY -->
+      <h2 class="section-title" id="executive-summary">Executive Summary</h2>
+      <p class="body-text">VITARA's design system must work at two scales: a marketing website that positions the product for users who have never heard of it, and a mobile health app that users interact with every single day. The marketing site uses Cormorant Garamond for editorial authority and Plus Jakarta Sans for clarity — a combination that reads as premium and considered, not clinical. The mobile app uses the native type system (SF Pro on iOS, Google Sans on Android) because health data is a daily-use interface: native typography scales, renders accessibly, and respects user system settings including Dynamic Type. The binding thread between both surfaces is a restrained palette anchored in deep forest green (#1A5C3F), warm cream (#F8F7F3), and clean white — colors that feel warm and trustworthy without triggering the "medical app blue" associations of every other health product on the market.</p>
+
+      <!-- DESIGN PHILOSOPHY -->
+      <h2 class="section-title" id="design-philosophy">Design Philosophy</h2>
+      <div class="card-grid">
+        <div class="card">
+          <span class="eyebrow">Principle 1</span>
+          <strong class="body-text">Culturally Neutral UI</strong>
+          <p class="body-text">The interface must feel appropriate for every background represented in our user base. This means avoiding icons, illustrations, or color meanings that carry strong cultural connotations in specific contexts. No food photography of any single cuisine in default states. No skin tone or body type assumptions in avatar/illustration systems. The UI's job is to surface the user's own cultural context — not impose one.</p>
+        </div>
+        <div class="card">
+          <span class="eyebrow">Principle 2</span>
+          <strong class="body-text">Clarity Over Cleverness</strong>
+          <p class="body-text">Health data must be immediately readable. No ambiguous chart axes. No unlabeled icons for core navigation. When a user sees their HRV trend, they should understand what it means without tapping for a tooltip. Labels, units, and context live next to data by default — not hidden behind a "learn more" tap. Clever animations and interactions are earned, not applied by default.</p>
+        </div>
+        <div class="card">
+          <span class="eyebrow">Principle 3</span>
+          <strong class="body-text">Data-Forward Display</strong>
+          <p class="body-text">Health data should be displayed as information, not decoration. Numbers need context: show the trend arrow alongside the value, show the 7-day range alongside today's reading, show what "good" looks like relative to the user's own history. A sleep score of 72 means nothing without knowing it was 68 yesterday. The design system encodes this: health metric components always include trend and reference, never just the current value.</p>
+        </div>
+        <div class="card">
+          <span class="eyebrow">Principle 4</span>
+          <strong class="body-text">Accessibility First</strong>
+          <p class="body-text">WCAG AA is the minimum bar, not the aspiration. Touch targets at 44px minimum, contrast at 4.5:1 for all body text, 3:1 for large text and UI components. Screen reader labels on all health data readouts: "Heart rate: 68 beats per minute, down 3 from yesterday." Reduce-motion preferences are respected at the system level — no CSS or Flutter animation overrides the user's OS setting.</p>
+        </div>
+        <div class="card">
+          <span class="eyebrow">Principle 5</span>
+          <strong class="body-text">Premium but Warm</strong>
+          <p class="body-text">Clinical apps feel cold. Wellness apps feel saccharine. VITARA should feel like a thoughtful, trusted advisor — the visual equivalent of a well-designed notebook, not a hospital form or a motivational poster. The design restraint (limited color, generous whitespace, serif headlines) creates the premium register; the warm cream background and the specificity of culturally accurate content create the warmth.</p>
+        </div>
+      </div>
+
+      <div class="callout callout-tip">
+        <strong>Cultural Neutrality in Practice</strong><br />
+        Specific decisions required by this principle: any default illustrations showing food must be abstract or minimal, not depicting a specific cuisine; person illustrations (onboarding, empty states) must include diverse skin tone representation; icon choices should avoid double meanings across cultures (the thumbs-up gesture is offensive in some South Asian contexts; certain color meanings differ by culture — red means danger in Western UI but celebration in South Asian contexts). When in doubt, use text labels rather than icons for anything culturally interpretable.
+      </div>
+
+      <!-- COLOR SYSTEM -->
+      <h2 class="section-title" id="color-system">Color System</h2>
+      <p class="body-text">The marketing website color system is defined in <code>assets/css/main.css</code> as CSS custom properties. The mobile app uses a parallel set of Flutter ThemeData tokens derived from the same palette.</p>
+
+      <p class="body-text"><strong>Marketing site palette:</strong></p>
+
+      <svg viewBox="0 0 860 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="VITARA color palette swatches" style="width:100%;height:auto;display:block;margin:16px 0 24px;">
+        <!-- Cream -->
+        <rect x="10" y="10" width="80" height="52" rx="6" fill="#F8F7F3" stroke="#E3E2DC" stroke-width="1"/>
+        <text x="50" y="76" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#4A4A47" text-anchor="middle">Cream</text>
+        <text x="50" y="88" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#8C8C88" text-anchor="middle">#F8F7F3</text>
+        <!-- White -->
+        <rect x="105" y="10" width="80" height="52" rx="6" fill="#FFFFFF" stroke="#E3E2DC" stroke-width="1"/>
+        <text x="145" y="76" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#4A4A47" text-anchor="middle">White</text>
+        <text x="145" y="88" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#8C8C88" text-anchor="middle">#FFFFFF</text>
+        <!-- Ink -->
+        <rect x="200" y="10" width="80" height="52" rx="6" fill="#111110"/>
+        <text x="240" y="76" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#4A4A47" text-anchor="middle">Ink</text>
+        <text x="240" y="88" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#8C8C88" text-anchor="middle">#111110</text>
+        <!-- Ink 2 -->
+        <rect x="295" y="10" width="80" height="52" rx="6" fill="#4A4A47"/>
+        <text x="335" y="76" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#4A4A47" text-anchor="middle">Ink 2</text>
+        <text x="335" y="88" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#8C8C88" text-anchor="middle">#4A4A47</text>
+        <!-- Ink 3 -->
+        <rect x="390" y="10" width="80" height="52" rx="6" fill="#8C8C88"/>
+        <text x="430" y="76" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#4A4A47" text-anchor="middle">Ink 3</text>
+        <text x="430" y="88" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#8C8C88" text-anchor="middle">#8C8C88</text>
+        <!-- Green -->
+        <rect x="485" y="10" width="80" height="52" rx="6" fill="#1A5C3F"/>
+        <text x="525" y="76" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#4A4A47" text-anchor="middle">Green</text>
+        <text x="525" y="88" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#8C8C88" text-anchor="middle">#1A5C3F</text>
+        <!-- Green Light -->
+        <rect x="580" y="10" width="80" height="52" rx="6" fill="#EAF2EC" stroke="#E3E2DC" stroke-width="1"/>
+        <text x="620" y="76" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#4A4A47" text-anchor="middle">Green Light</text>
+        <text x="620" y="88" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#8C8C88" text-anchor="middle">#EAF2EC</text>
+        <!-- Alert Amber -->
+        <rect x="675" y="10" width="80" height="52" rx="6" fill="#E8A020"/>
+        <text x="715" y="76" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#4A4A47" text-anchor="middle">Alert Amber</text>
+        <text x="715" y="88" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#8C8C88" text-anchor="middle">#E8A020</text>
+        <!-- Error Red -->
+        <rect x="770" y="10" width="80" height="52" rx="6" fill="#C0392B"/>
+        <text x="810" y="76" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#4A4A47" text-anchor="middle">Error Red</text>
+        <text x="810" y="88" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#8C8C88" text-anchor="middle">#C0392B</text>
+      </svg>
+
+      <p class="body-text"><strong>Mobile app color tokens (Flutter ThemeData):</strong></p>
+      <table class="comparison-table">
+        <thead>
+          <tr><th>Token Name</th><th>Light Mode Value</th><th>Dark Mode Value</th><th>Semantic Use</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>colorPrimary</td><td>#1A5C3F</td><td>#2E7D56</td><td>Primary CTA buttons, active nav items, progress rings</td></tr>
+          <tr><td>colorPrimaryContainer</td><td>#EAF2EC</td><td>#0D3D29</td><td>Chip backgrounds, selected state fills, callout boxes</td></tr>
+          <tr><td>colorSurface</td><td>#FFFFFF</td><td>#1C1C1E</td><td>Card backgrounds, modal sheets</td></tr>
+          <tr><td>colorBackground</td><td>#F8F7F3</td><td>#111110</td><td>Screen background</td></tr>
+          <tr><td>colorOnPrimary</td><td>#FFFFFF</td><td>#FFFFFF</td><td>Text and icons on primary green backgrounds</td></tr>
+          <tr><td>colorOnSurface</td><td>#111110</td><td>#F2F2F2</td><td>Primary body text on cards</td></tr>
+          <tr><td>colorOutline</td><td>#E3E2DC</td><td>#3A3A3C</td><td>Card borders, input borders at rest</td></tr>
+          <tr><td>colorError</td><td>#C0392B</td><td>#FF6B6B</td><td>Error states, validation failures</td></tr>
+          <tr><td>colorWarning</td><td>#E8A020</td><td>#FFB347</td><td>Nutrition warnings, streak alerts</td></tr>
+          <tr><td>colorSuccess</td><td>#1A5C3F</td><td>#2E7D56</td><td>Goal achieved states, positive health trends</td></tr>
+          <tr><td>colorSubtle</td><td>#8C8C88</td><td>#6B6B68</td><td>Secondary text, placeholder text, disabled states</td></tr>
+        </tbody>
+      </table>
+
+      <!-- TYPOGRAPHY -->
+      <h2 class="section-title" id="typography">Typography System</h2>
+
+      <p class="body-text"><strong>Marketing site (web):</strong></p>
+      <table class="comparison-table">
+        <thead>
+          <tr><th>Usage</th><th>Family</th><th>Weight</th><th>Size Range</th><th>CSS Class</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Page titles, hero headlines</td><td>Cormorant Garamond</td><td>500–600</td><td>36–64px</td><td>.page-title</td></tr>
+          <tr><td>Section headings</td><td>Cormorant Garamond</td><td>500</td><td>24–32px</td><td>.section-title</td></tr>
+          <tr><td>Pull quotes</td><td>Cormorant Garamond Italic</td><td>400</td><td>20–24px</td><td>.pullquote</td></tr>
+          <tr><td>Body text, UI labels</td><td>Plus Jakarta Sans</td><td>400–600</td><td>14–18px</td><td>.body-text, .lead</td></tr>
+          <tr><td>Code, API references</td><td>JetBrains Mono</td><td>400–500</td><td>13–14px</td><td>.code-block</td></tr>
+        </tbody>
+      </table>
+
+      <p class="body-text"><strong>Mobile app type scale:</strong></p>
+      <table class="comparison-table">
+        <thead>
+          <tr><th>Scale Token</th><th>Size</th><th>iOS (SF Pro)</th><th>Android (Google Sans)</th><th>Common Use</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>xs</td><td>12px / 12sp</td><td>SF Pro Text Regular</td><td>Google Sans Regular</td><td>Micro labels, badge text, timestamps</td></tr>
+          <tr><td>sm</td><td>14px / 14sp</td><td>SF Pro Text Regular / Medium</td><td>Google Sans Regular / Medium</td><td>Secondary body text, metadata, chip labels</td></tr>
+          <tr><td>base</td><td>16px / 16sp</td><td>SF Pro Text Regular</td><td>Google Sans Regular</td><td>Primary body text, input values</td></tr>
+          <tr><td>lg</td><td>18px / 18sp</td><td>SF Pro Text Semibold</td><td>Google Sans Medium</td><td>Card titles, section labels</td></tr>
+          <tr><td>xl</td><td>22px / 22sp</td><td>SF Pro Display Medium</td><td>Google Sans Medium</td><td>Screen titles, coaching message AI text</td></tr>
+          <tr><td>2xl</td><td>28px / 28sp</td><td>SF Pro Display Semibold</td><td>Google Sans Bold</td><td>Large metric values (sleep score, step count)</td></tr>
+          <tr><td>3xl</td><td>36px / 36sp</td><td>SF Pro Display Bold</td><td>Google Sans Bold</td><td>Hero metric display, onboarding greeting</td></tr>
+          <tr><td>4xl</td><td>48px / 48sp</td><td>SF Pro Display Heavy</td><td>Google Sans ExtraBold</td><td>Progress ring center value</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-tip">
+        <strong>Health Data Display</strong><br />
+        The principle that numbers need context applies directly to typography: never display a health metric at xl/2xl/3xl scale without also displaying a trend indicator at sm/base scale immediately adjacent. A large "72" sleep score with a small "+4 from yesterday" and a small "/ 100" reference is far more meaningful than the number alone. This pairing is mandatory in the HealthMetricCard and ProgressRing components — it is baked into the component API, not optional.
+      </div>
+
+      <!-- COMPONENTS -->
+      <h2 class="section-title" id="components">Component Library (Flutter Mobile)</h2>
+      <p class="body-text">All components are built as Flutter widgets following the VITARA design system tokens. Component specifications below define the visual contract — implementation in <code>lib/ui/components/</code>.</p>
+
+      <table class="comparison-table">
+        <thead>
+          <tr><th>Component</th><th>Spec</th><th>States</th><th>Accessibility</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Primary Button</strong></td>
+            <td>Height: 48px. Background: colorPrimary (#1A5C3F). Text: colorOnPrimary, 16sp, SemiBold. Border radius: 8px. Horizontal padding: 24px. Full-width in forms, auto-width in inline contexts.</td>
+            <td>Default, Pressed (10% darker), Disabled (30% opacity), Loading (replace label with CircularProgressIndicator at 20px)</td>
+            <td>Minimum touch target 44×44px enforced with GestureDetector padding; label readable at 4.5:1 contrast</td>
+          </tr>
+          <tr>
+            <td><strong>Secondary Button</strong></td>
+            <td>Same sizing as Primary. Background: transparent. Border: 1.5px colorPrimary. Text: colorPrimary, 16sp, SemiBold.</td>
+            <td>Default, Pressed (colorPrimaryContainer fill), Disabled (colorOutline border, colorSubtle text)</td>
+            <td>Same as Primary; border must have 3:1 contrast against the background it sits on</td>
+          </tr>
+          <tr>
+            <td><strong>Ghost Button</strong></td>
+            <td>Same sizing. No background, no border. Text: colorPrimary, 16sp, Medium. Used for low-priority actions (Skip, Cancel).</td>
+            <td>Default, Pressed (colorPrimaryContainer background), Disabled (colorSubtle text)</td>
+            <td>Must not be used as the only action available on a screen — always paired with a higher-weight button</td>
+          </tr>
+          <tr>
+            <td><strong>Card</strong></td>
+            <td>Background: colorSurface (white). Border: 1px colorOutline. Border radius: 12px. Padding: 16px. Box shadow: 0 1px 3px rgba(0,0,0,0.06).</td>
+            <td>Default, Tappable (adds ripple + 1px colorPrimary border on press), Elevated (shadow: 0 4px 12px rgba(0,0,0,0.08))</td>
+            <td>If tappable, entire card is a Semantics widget with a meaningful label describing the card's content and action</td>
+          </tr>
+          <tr>
+            <td><strong>Input Field</strong></td>
+            <td>Height: 52px. Background: white. Border: 1.5px colorOutline at rest, 1.5px colorPrimary on focus. Border radius: 8px. Padding: 16px horizontal, 14px vertical. Label floats above on focus (animated, 150ms).</td>
+            <td>Empty, Focused (green border), Filled, Error (colorError border + message below), Disabled (colorBackground, no interaction)</td>
+            <td>Label always visible (floated, not placeholder-only). Error message announced to screen reader on state change.</td>
+          </tr>
+          <tr>
+            <td><strong>Health Metric Card</strong></td>
+            <td>Compact card (80px tall). Left: metric icon (24×24, colorPrimary). Center: metric name (sm, colorSubtle) + current value (2xl, colorOnSurface) + unit (sm, colorSubtle). Right: trend arrow + delta value (sm; green if positive/improving, amber if neutral, red if negative). Context line at bottom: "7d avg: X" in xs colorSubtle.</td>
+            <td>Normal, Highlighted (colorPrimaryContainer background for today's focus metric), Alert (amber tint if metric outside normal range)</td>
+            <td>Semantic label: "[Metric name]: [value] [unit], [trend direction] [delta] from yesterday. 7-day average: [value]."</td>
+          </tr>
+          <tr>
+            <td><strong>Coaching Chat Bubble — User</strong></td>
+            <td>Right-aligned. Background: colorPrimary. Text: white, 16sp Regular. Border radius: 16px 16px 4px 16px. Max-width: 80% of screen. Padding: 12px 16px.</td>
+            <td>Sent, Sending (60% opacity + spinner), Failed (error tint + retry icon)</td>
+            <td>Role: "User message: [content]." in Semantics.</td>
+          </tr>
+          <tr>
+            <td><strong>Coaching Chat Bubble — AI</strong></td>
+            <td>Left-aligned. Background: colorSurface. Border: 1px colorOutline. Text: colorOnSurface, 16sp Regular, line-height 1.6 (more generous for reading). Border radius: 4px 16px 16px 16px. Max-width: 88%. Padding: 14px 16px. AI text uses the xl scale for any key health insight within the response.</td>
+            <td>Appearing (fade + translate-Y: 8px → 0, 250ms), Complete, Streaming (trailing cursor blink)</td>
+            <td>Role: "VITARA coach message: [content]." Ensure streaming text is announced when complete, not character-by-character.</td>
+          </tr>
+          <tr>
+            <td><strong>Meal Card</strong></td>
+            <td>Horizontal card, 72px tall. Left: 56×56 food image (rounded 8px) or food category icon if no image. Center: meal name (base SemiBold) + macro pills (sm, colorPrimaryContainer background). Right: total kcal (lg SemiBold) + meal type label (xs colorSubtle).</td>
+            <td>Default, Logged (colorPrimaryContainer left border), Planned (colorOutline left border, dashed)</td>
+            <td>Semantic label: "[Food name], [calories] calories, [protein]g protein, [carbs]g carbs, [fat]g fat."</td>
+          </tr>
+          <tr>
+            <td><strong>Progress Ring</strong></td>
+            <td>Circular progress indicator. Outer ring: colorPrimaryContainer. Inner ring: colorPrimary (animated fill). Center: large value (3xl/4xl SemiBold) + label below (xs colorSubtle). Sizes: sm (60px), md (96px), lg (140px). Animation: 400ms ease-in-out on value change.</td>
+            <td>Loading (indeterminate spin), Filled (percentage, eased animation), Completed (full ring + subtle pulse), Over-target (colorWarning ring)</td>
+            <td>Semantic label: "[Label]: [value] of [target], [percentage]% complete." Do not rely on visual ring alone.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- SPACING -->
+      <h2 class="section-title" id="spacing">Spacing System</h2>
+      <p class="body-text">All spacing is based on a 4px base unit. Never use arbitrary pixel values in code — always compose from these tokens. In Flutter, define these as constants in <code>lib/ui/tokens/spacing.dart</code>.</p>
+
+      <table class="comparison-table">
+        <thead>
+          <tr><th>Token</th><th>Value</th><th>Common Use</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>spacing.xs</td><td>4px</td><td>Icon-to-label gaps, tight tag spacing, list item separators</td></tr>
+          <tr><td>spacing.sm</td><td>8px</td><td>Padding inside chips and badges, horizontal gap between metric and unit</td></tr>
+          <tr><td>spacing.md</td><td>16px</td><td>Card internal padding, screen horizontal margin, form field gap</td></tr>
+          <tr><td>spacing.lg</td><td>24px</td><td>Section-to-section gap on a screen, between major card groups</td></tr>
+          <tr><td>spacing.xl</td><td>32px</td><td>Top padding on scroll content, between onboarding steps</td></tr>
+          <tr><td>spacing.2xl</td><td>48px</td><td>Bottom safe area padding, large section separators in plan view</td></tr>
+          <tr><td>spacing.3xl</td><td>64px</td><td>Hero section padding, empty state content centering</td></tr>
+          <tr><td>spacing.4xl</td><td>80px</td><td>Bottom nav bar height + content clearance</td></tr>
+          <tr><td>spacing.5xl</td><td>96px</td><td>Full-screen modal top padding (sheet handle clearance)</td></tr>
+        </tbody>
+      </table>
+
+      <!-- LAYOUT -->
+      <h2 class="section-title" id="layout">Layout System</h2>
+      <table class="comparison-table">
+        <thead>
+          <tr><th>Context</th><th>Max Width</th><th>Horizontal Margin</th><th>Column Grid</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Mobile (app, phone)</td><td>390px (iPhone 14 base)</td><td>16px each side</td><td>4-column, 8px gutter</td></tr>
+          <tr><td>Mobile large (phone)</td><td>430px (iPhone 14 Pro Max)</td><td>20px each side</td><td>4-column, 8px gutter</td></tr>
+          <tr><td>Tablet (Flutter web / iPad)</td><td>768px</td><td>24px each side</td><td>8-column, 16px gutter</td></tr>
+          <tr><td>Web (marketing site)</td><td>1120px</td><td>80px each side</td><td>12-column, 24px gutter</td></tr>
+          <tr><td>Web narrow (marketing)</td><td>760px (container-sm)</td><td>Auto centered</td><td>Prose column, no explicit grid</td></tr>
+        </tbody>
+      </table>
+
+      <p class="body-text">Bottom navigation bar on mobile occupies 56px + device safe area inset. All scrollable content must have bottom padding equal to (56px + safeAreaInsets.bottom + spacing.md) to avoid content being obscured by the nav bar.</p>
+
+      <!-- MOTION -->
+      <h2 class="section-title" id="motion">Motion Principles</h2>
+      <table class="comparison-table">
+        <thead>
+          <tr><th>Duration Token</th><th>Value</th><th>Use Case</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>duration.micro</td><td>150ms</td><td>Button press feedback, checkbox toggle, switch toggle, icon swap</td></tr>
+          <tr><td>duration.standard</td><td>250ms</td><td>Card appear/disappear, input focus border transition, chip selection, tab switch</td></tr>
+          <tr><td>duration.complex</td><td>400ms</td><td>Screen transitions (page route), progress ring fill, onboarding step advance, modal sheet presentation</td></tr>
+          <tr><td>duration.slow</td><td>600ms</td><td>Plan generation loading screen states, daily brief reveal</td></tr>
+        </tbody>
+      </table>
+
+      <p class="body-text"><strong>Easing:</strong> Use <code>Curves.easeInOut</code> as the default for all transitions. Use <code>Curves.easeOut</code> for elements entering the screen (feels like arrival). Use <code>Curves.easeIn</code> for elements leaving the screen. Never use linear easing for UI transitions.</p>
+
+      <p class="body-text"><strong>Reduce motion:</strong> Check <code>MediaQuery.of(context).disableAnimations</code> at the app root. When true, replace all AnimatedWidget and transition animations with instant state changes. Health data progress rings still animate their value change (functional feedback) but at 0ms duration — the ring jumps to the correct value rather than sweeping.</p>
+
+      <p class="body-text"><strong>No decorative animation:</strong> VITARA does not use looping animations, particle effects, or ambient motion. Animations are always in response to a user action or a data state change — never running unsolicited in the background.</p>
+
+      <!-- ACCESSIBILITY -->
+      <h2 class="section-title" id="accessibility">Accessibility Requirements</h2>
+      <ul class="body-text">
+        <li><strong>Contrast:</strong> WCAG AA minimum — 4.5:1 for all body text (16px and below), 3:1 for large text (18px+ or 14px+ bold) and UI components (borders, icons). Test in both light and dark mode.</li>
+        <li><strong>Touch targets:</strong> Minimum 44×44 logical pixels for all interactive elements. Use GestureDetector or InkWell with a padding wrapper if the visual element is smaller.</li>
+        <li><strong>Dynamic Type (iOS):</strong> All text must respect the user's system font size setting. Use Flutter's TextScaleFactor or rely on Material Typography which respects it automatically. Test at Accessibility Extra Large font size — layouts must reflow gracefully, not overflow.</li>
+        <li><strong>Screen reader support:</strong> Every health metric readout requires a Semantics widget with a complete spoken representation: value, unit, trend, and context. Example: <code>Semantics(label: 'Sleep score: 74 out of 100, up 3 from last night', child: SleepScoreWidget(...))</code></li>
+        <li><strong>Focus management:</strong> After a modal sheet opens, focus must move to the first interactive element in the sheet. When it closes, focus returns to the element that triggered it.</li>
+        <li><strong>Error announcements:</strong> Form validation errors are announced to the screen reader when they appear, not only displayed visually. Use <code>SemanticsService.announce()</code> or a live region equivalent.</li>
+        <li><strong>Color-independent information:</strong> Trend arrows never communicate direction through color alone — the arrow direction (up/down/flat) and a text label ("+3", "-2", "stable") always accompany any color-coded trend indicator.</li>
+      </ul>
+
+      <!-- API INTEGRATIONS -->
+      <h2 class="section-title" id="api-integrations">API Integration Spec</h2>
+      <table class="comparison-table">
+        <thead>
+          <tr><th>Service</th><th>Purpose</th><th>Key Endpoints / SDK</th><th>Auth Method</th><th>Phase</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Claude API (Anthropic)</strong></td>
+            <td>Conversational coaching, daily brief generation, adaptive plan generation</td>
+            <td>POST /v1/messages (streaming for chat, non-streaming for plan gen); model: claude-sonnet-4-6</td>
+            <td>x-api-key header; called server-side only — API key never exposed to client</td>
+            <td>MVP</td>
+          </tr>
+          <tr>
+            <td><strong>HealthKit (iOS)</strong></td>
+            <td>Read sleep analysis, HRV, resting heart rate, steps, active energy from Apple Health</td>
+            <td>Flutter <code>health</code> package; HKQuery for time-range reads; HKObserverQuery for background updates</td>
+            <td>NSHealthShareUsageDescription in Info.plist; user grants permission per data type; no OAuth</td>
+            <td>MVP</td>
+          </tr>
+          <tr>
+            <td><strong>Health Connect (Android)</strong></td>
+            <td>Equivalent to HealthKit for Android — read sleep, HRV, steps, heart rate from Health Connect aggregator</td>
+            <td>Flutter <code>health</code> package; same API surface as HealthKit bridge; AndroidManifest health permissions</td>
+            <td>Android health_permissions in manifest; runtime permission request; no OAuth</td>
+            <td>MVP</td>
+          </tr>
+          <tr>
+            <td><strong>Open Food Facts API</strong></td>
+            <td>Free food database for manual food logging — especially strong for packaged foods in UK/EU markets</td>
+            <td>GET https://world.openfoodfacts.org/api/v2/product/{barcode}; search: GET /cgi/search.pl?search_terms=</td>
+            <td>No auth required; rate-limit: 100 req/min; add User-Agent header identifying VITARA app</td>
+            <td>MVP</td>
+          </tr>
+          <tr>
+            <td><strong>USDA FoodData Central</strong></td>
+            <td>Authoritative nutrition database for US foods; stronger on raw ingredients and South Asian staples than Open Food Facts</td>
+            <td>GET https://api.nal.usda.gov/fdc/v1/foods/search?query={term}&api_key=; GET /fdc/v1/food/{fdcId}</td>
+            <td>Free USDA API key (registered); query parameter; 1,000 req/hour</td>
+            <td>MVP</td>
+          </tr>
+          <tr>
+            <td><strong>GPT-4o Vision (OpenAI)</strong></td>
+            <td>Identify food items from a photo and return structured nutrition estimate</td>
+            <td>POST /v1/chat/completions with image_url content type; model: gpt-4o; structured JSON output schema</td>
+            <td>Bearer token; called server-side only; key in env vars</td>
+            <td>MVP (Plus/Pro)</td>
+          </tr>
+          <tr>
+            <td><strong>RevenueCat</strong></td>
+            <td>In-app subscription management for App Store and Google Play; entitlement management; webhook events</td>
+            <td>Flutter SDK: <code>purchases_flutter</code>; Packages.getOfferings(), purchasePackage(), getCustomerInfo()</td>
+            <td>Public SDK key in app (not secret); server-side webhook validation with shared secret</td>
+            <td>MVP</td>
+          </tr>
+          <tr>
+            <td><strong>Firebase Cloud Messaging</strong></td>
+            <td>Push notifications for daily brief, meal reminders, hydration nudges, coaching responses</td>
+            <td>Flutter: <code>firebase_messaging</code> package; FCM token stored in users table; server sends via FCM REST API or Admin SDK</td>
+            <td>Firebase project config (google-services.json / GoogleService-Info.plist); server uses FCM Server Key</td>
+            <td>MVP</td>
+          </tr>
+          <tr>
+            <td><strong>Sentry</strong></td>
+            <td>Error tracking and performance monitoring for Flutter app and FastAPI backend</td>
+            <td>Flutter: <code>sentry_flutter</code>; init in main.dart with DSN; attach user ID on login; attach breadcrumbs on navigation</td>
+            <td>DSN in app config (public); PII scrubbing: never attach health data or coaching messages to Sentry events</td>
+            <td>MVP</td>
+          </tr>
+          <tr>
+            <td><strong>Fitbit OAuth</strong></td>
+            <td>Read Fitbit sleep, heart rate, and activity data for users with Fitbit devices</td>
+            <td>OAuth 2.0 authorization_code flow; GET /1/user/-/sleep/date/{date}.json; GET /1/user/-/activities/heart/date/today/1d.json</td>
+            <td>Client credentials in server env; OAuth tokens encrypted in user_integrations via KMS</td>
+            <td>Phase 2</td>
+          </tr>
+          <tr>
+            <td><strong>Oura API</strong></td>
+            <td>Read Oura Ring sleep scores, HRV, readiness, and temperature trend</td>
+            <td>GET https://api.ouraring.com/v2/usercollection/sleep; GET /v2/usercollection/daily_readiness; OAuth 2.0</td>
+            <td>OAuth 2.0 PKCE; tokens stored encrypted in user_integrations; 90-day refresh token rotation</td>
+            <td>Phase 2</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <a href="../../" class="footer-logo">VITARA</a>
+    <p class="footer-copy">&copy; 2026 VITARA. Adaptive health coaching.</p>
+    <nav class="footer-links">
+      <a href="../../product/">Product</a>
+      <a href="../../docs/">Docs</a>
+      <a href="../../about/">About</a>
+      <a href="mailto:hello@vitara.health">Contact</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../../assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feature Ticket List — VITARA Docs</title>
+  <meta name="description" content="VITARA feature tickets: all buildable work items from M1 Foundation through M5 Launch, with acceptance criteria, dependencies, and AI prompt templates." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='14' fill='%231A5C3F'/><text x='50' y='76' font-family='Georgia,serif' font-size='66' font-weight='600' fill='white' text-anchor='middle'>V</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+</head>
+<body>
+
+<header id="nav">
+  <div class="container nav-inner">
+    <a href="../../" class="logo">VITARA</a>
+    <nav class="nav-links" aria-label="Site navigation">
+      <a href="../../product/" class="nav-link">Product</a>
+      <a href="../../how-it-works/" class="nav-link">How It Works</a>
+      <a href="../../docs/" class="nav-link active">Docs</a>
+      <a href="../../about/" class="nav-link">About</a>
+    </nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+    </button>
+    <a href="../../#waitlist" class="btn btn-sm nav-desktop-cta">Join waitlist</a>
+  </div>
+</header>
+<div id="nav-mobile" class="nav-mobile">
+  <a href="../../product/">Product</a>
+  <a href="../../how-it-works/">How It Works</a>
+  <a href="../../docs/">Docs</a>
+  <a href="../../about/">About</a>
+  <a href="../../#waitlist" class="btn btn-sm">Join waitlist</a>
+</div>
+
+<main class="docs-main">
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <p class="docs-sidebar-title">Documentation</p>
+      <nav class="docs-nav" aria-label="Documentation">
+        <a href="../" class="docs-nav-item">Overview</a>
+        <a href="../prd/" class="docs-nav-item">Product Requirements</a>
+        <a href="../technical-architecture/" class="docs-nav-item">Technical Architecture</a>
+        <a href="../security-access/" class="docs-nav-item">Security &amp; Access</a>
+        <a href="../frontend-spec/" class="docs-nav-item">Frontend Specification</a>
+        <a href="../feature-tickets/" class="docs-nav-item active">Feature Tickets</a>
+      </nav>
+    </aside>
+
+    <div class="docs-content">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../" class="breadcrumb-item">Home</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="../" class="breadcrumb-item">Docs</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item active">Feature Tickets</span>
+      </nav>
+
+      <div class="docs-meta">
+        <span class="badge badge-next">v0.1 · Customer Discovery Stage</span>
+        <span>Last updated: June 2026</span>
+        <span>Author: VITARA Engineering</span>
+      </div>
+
+      <h1 class="page-title">Feature Ticket List</h1>
+      <p class="lead">This document translates the PRD into concrete, buildable work items organized into five milestones. Each ticket has an ID, priority, acceptance criteria, and dependencies. This is the starting point for sprint planning — not a frozen backlog. Tickets will be refined as discovery interviews produce sharper requirements.</p>
+
+      <div class="toc">
+        <p class="docs-sidebar-title">On this page</p>
+        <ol>
+          <li><a href="#ticket-format">Ticket Format</a></li>
+          <li><a href="#roadmap-timeline">Roadmap Timeline</a></li>
+          <li><a href="#m1">M1: Foundation</a></li>
+          <li><a href="#m2">M2: Adaptive Plan Engine</a></li>
+          <li><a href="#m3">M3: AI Coaching</a></li>
+          <li><a href="#m4">M4: Nutrition &amp; Tracking</a></li>
+          <li><a href="#m5">M5: Polish &amp; Launch</a></li>
+          <li><a href="#priority-summary">Priority Summary</a></li>
+          <li><a href="#prompt-templates">AI Prompt Templates</a></li>
+        </ol>
+      </div>
+
+      <!-- TICKET FORMAT -->
+      <h2 class="section-title" id="ticket-format">Ticket Format</h2>
+      <p class="body-text">Each ticket contains the following fields:</p>
+      <table class="comparison-table">
+        <thead>
+          <tr><th>Field</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>ID</strong></td><td>Stable identifier: MODULE-NNN (e.g. AUTH-001, PLAN-003). Never reused even if the ticket is deleted.</td></tr>
+          <tr><td><strong>Priority</strong></td><td>MUST (required for MVP), SHOULD (strong preference for v1), COULD (nice-to-have in v1, acceptable to defer to v1.1)</td></tr>
+          <tr><td><strong>Feature Name</strong></td><td>Short human-readable name, used in PR titles and sprint board cards</td></tr>
+          <tr><td><strong>Description</strong></td><td>What this ticket builds and why it matters</td></tr>
+          <tr><td><strong>Acceptance Criteria</strong></td><td>Bulleted list of verifiable conditions that must all be true for the ticket to be considered done</td></tr>
+          <tr><td><strong>Dependencies</strong></td><td>Other ticket IDs that must be complete before this one can be started or completed</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-warning">
+        <strong>Discovery Phase</strong><br />
+        MUST-priority tickets across M1 (Foundation), M2 (Adaptive Plan Engine), and M3 (basic coaching) define the MVP. Everything in M4 and M5 that is marked SHOULD or COULD is explicitly post-validation scope — build it only after the first 50–100 users have confirmed the core personalization hypothesis. Do not let roadmap excitement pull M4/M5 COULD tickets into the MVP sprint.
+      </div>
+
+      <!-- ROADMAP TIMELINE SVG -->
+      <h2 class="section-title" id="roadmap-timeline">Roadmap Timeline</h2>
+
+      <svg viewBox="0 0 860 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="VITARA development milestones: M1 Foundation through M5 Launch" style="width:100%;height:auto;display:block;margin:16px 0 28px;">
+        <!-- Timeline line -->
+        <line x1="80" y1="44" x2="780" y2="44" stroke="#E3E2DC" stroke-width="3"/>
+        <!-- Active segment M1→M2 -->
+        <line x1="80" y1="44" x2="250" y2="44" stroke="#1A5C3F" stroke-width="3"/>
+
+        <!-- M1 circle (active) -->
+        <circle cx="80" cy="44" r="16" fill="#1A5C3F"/>
+        <text x="80" y="49" font-family="Plus Jakarta Sans, sans-serif" font-size="10" font-weight="700" fill="white" text-anchor="middle">M1</text>
+        <text x="80" y="70" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">Foundation</text>
+        <text x="80" y="82" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#8C8C88" text-anchor="middle">Auth + Profiles</text>
+        <text x="80" y="94" font-family="Plus Jakarta Sans, sans-serif" font-size="7.5" fill="#8C8C88" text-anchor="middle">Weeks 1–4</text>
+
+        <!-- M2 circle (next) -->
+        <circle cx="250" cy="44" r="16" fill="#1A5C3F"/>
+        <text x="250" y="49" font-family="Plus Jakarta Sans, sans-serif" font-size="10" font-weight="700" fill="white" text-anchor="middle">M2</text>
+        <text x="250" y="70" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">Plan Engine</text>
+        <text x="250" y="82" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#8C8C88" text-anchor="middle">Adaptive Plans</text>
+        <text x="250" y="94" font-family="Plus Jakarta Sans, sans-serif" font-size="7.5" fill="#8C8C88" text-anchor="middle">Weeks 5–8</text>
+
+        <!-- M3 circle (future) -->
+        <circle cx="430" cy="44" r="16" fill="white" stroke="#8C8C88" stroke-width="2"/>
+        <text x="430" y="49" font-family="Plus Jakarta Sans, sans-serif" font-size="10" font-weight="700" fill="#8C8C88" text-anchor="middle">M3</text>
+        <text x="430" y="70" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" font-weight="600" fill="#8C8C88" text-anchor="middle">AI Coaching</text>
+        <text x="430" y="82" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#8C8C88" text-anchor="middle">Chat + Briefs</text>
+        <text x="430" y="94" font-family="Plus Jakarta Sans, sans-serif" font-size="7.5" fill="#8C8C88" text-anchor="middle">Weeks 9–12</text>
+
+        <!-- M4 circle (future) -->
+        <circle cx="610" cy="44" r="16" fill="white" stroke="#8C8C88" stroke-width="2"/>
+        <text x="610" y="49" font-family="Plus Jakarta Sans, sans-serif" font-size="10" font-weight="700" fill="#8C8C88" text-anchor="middle">M4</text>
+        <text x="610" y="70" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" font-weight="600" fill="#8C8C88" text-anchor="middle">Nutrition</text>
+        <text x="610" y="82" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#8C8C88" text-anchor="middle">Tracking + Logging</text>
+        <text x="610" y="94" font-family="Plus Jakarta Sans, sans-serif" font-size="7.5" fill="#8C8C88" text-anchor="middle">Weeks 13–16</text>
+
+        <!-- M5 circle (future) -->
+        <circle cx="780" cy="44" r="16" fill="white" stroke="#8C8C88" stroke-width="2"/>
+        <text x="780" y="49" font-family="Plus Jakarta Sans, sans-serif" font-size="10" font-weight="700" fill="#8C8C88" text-anchor="middle">M5</text>
+        <text x="780" y="70" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" font-weight="600" fill="#8C8C88" text-anchor="middle">Polish + Launch</text>
+        <text x="780" y="82" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#8C8C88" text-anchor="middle">App Store Submit</text>
+        <text x="780" y="94" font-family="Plus Jakarta Sans, sans-serif" font-size="7.5" fill="#8C8C88" text-anchor="middle">Weeks 17–20</text>
+      </svg>
+
+      <!-- M1 FOUNDATION -->
+      <h2 class="section-title" id="m1">Milestone 1 — Foundation</h2>
+      <p class="body-text">M1 builds the account and health profile infrastructure that every other milestone depends on. No AI, no plans, no tracking — just solid auth, a complete profile model, and wearable data access from day one (even if the data isn't used until M2).</p>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>AUTH-001</strong>
+          <span class="badge badge-active">MUST</span>
+          <span class="body-text">User Registration</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Create an account with email and password. Send email verification. Store in <code>users</code> table with <code>is_verified=false</code>. Block access to all non-auth routes until verified.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>POST /api/v1/auth/register accepts email + password; returns 201 with user_id</li>
+          <li>Password is bcrypt-hashed before storage; plaintext never logged</li>
+          <li>Verification email delivered within 60 seconds; link expires after 24 hours</li>
+          <li>Duplicate email returns 409 Conflict (not a 500)</li>
+          <li>All auth routes return JSON errors with consistent shape: {code, message}</li>
+          <li>Registration form on mobile validates email format + password strength (min 8 chars, 1 number) before API call</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> None (first ticket)</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>AUTH-002</strong>
+          <span class="badge badge-active">MUST</span>
+          <span class="body-text">User Login + JWT</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Validate credentials and issue a 15-minute access token + 30-day refresh token. Refresh token stored in flutter_secure_storage. Implement automatic silent refresh on 401.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Successful login returns {access_token, refresh_token, expires_in: 900}</li>
+          <li>Access token payload contains: user_id, subscription_tier, iat, exp</li>
+          <li>Refresh token stored in flutter_secure_storage (not SharedPreferences) — verified with unit test</li>
+          <li>Expired access token triggers silent refresh without user intervention; request is retried automatically</li>
+          <li>5 consecutive failed logins lock the account for 30 minutes; user receives alert email</li>
+          <li>POST /auth/logout invalidates refresh token in Redis; subsequent refresh attempts return 401</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> AUTH-001</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>AUTH-003</strong>
+          <span class="badge badge-next">SHOULD</span>
+          <span class="body-text">Biometric App Lock</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> After the app is backgrounded for more than 5 minutes, require Face ID or fingerprint (or a 6-digit PIN as fallback) before showing any health data. Does not re-issue tokens — gates access to the stored refresh token.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>App detects background/foreground transitions and starts a 5-minute lock timer</li>
+          <li>Biometric prompt uses <code>local_auth</code> package; graceful fallback to PIN if biometric unavailable</li>
+          <li>5 failed PIN attempts clears stored tokens and requires full login</li>
+          <li>Lock screen does not display any health data (black screen or VITARA logo only)</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> AUTH-002</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>PROFILE-001</strong>
+          <span class="badge badge-active">MUST</span>
+          <span class="body-text">Health Onboarding Flow</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> 7-screen onboarding flow that collects the full profile needed for plan generation: goal input, ethnicity + food culture, location (city/country), body rhythm (wake/sleep/peak energy time), dietary preferences and restrictions, basic health metrics (height, weight, age, known conditions). Saves incrementally — each screen writes to user_profiles; if the user exits mid-flow they resume from the last completed step.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Each screen writes to user_profiles on "Next" tap; partial profile is never lost</li>
+          <li>Ethnicity selector allows multi-select (up to 4 ethnicities); includes: South Asian (Indian, Pakistani, Bangladeshi, Sri Lankan), West African, East African, Middle Eastern, East Asian, Southeast Asian, Latin American, European, Other with free text</li>
+          <li>Dietary preferences screen includes: vegetarian, vegan, halal, kosher, pescatarian, lacto-vegetarian, Jain; plus allergens: nuts, gluten, dairy, shellfish, eggs, soy</li>
+          <li>Wake/sleep time inputs use a time-wheel picker with timezone auto-detected from device</li>
+          <li>Total onboarding time under 4 minutes (tested with real user timing on pilot sessions)</li>
+          <li>Progress indicator shows current step / 7 throughout</li>
+          <li>Onboarding cannot be skipped entirely; users can tap "Skip for now" on optional fields only (health conditions, medications)</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> AUTH-001, AUTH-002</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>PROFILE-002</strong>
+          <span class="badge badge-next">SHOULD</span>
+          <span class="body-text">Profile Edit</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Allow users to update any field from their onboarding profile after completing it. Changes to ethnicity, dietary preferences, wake/sleep time, or health conditions should flag the current plan as stale and prompt a plan refresh.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>All onboarding fields are editable from Profile settings screen</li>
+          <li>Changes to plan-impacting fields (ethnicity, dietary prefs, body rhythm) set plan_status = 'stale' and show a banner: "Your profile changed. Refresh your plan?"</li>
+          <li>Weight updates log a new entry in health_metrics (metric_type = 'body_weight') rather than overwriting the onboarding value</li>
+          <li>PATCH /api/v1/users/profile returns updated profile; no full page reload needed</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> PROFILE-001</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>PROFILE-003</strong>
+          <span class="badge badge-active">MUST</span>
+          <span class="body-text">Account + Data Deletion (GDPR)</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Users must be able to request full deletion of their account and all associated health data. 30-day soft-delete period; hard deletion on day 31 covers all PostgreSQL rows, S3 objects, and ChromaDB embeddings.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Delete account option accessible from Settings; requires password confirmation before submitting</li>
+          <li>User receives email confirming deletion request and 30-day timeline</li>
+          <li>During 30-day period: account is locked (cannot log in) but data is not yet deleted</li>
+          <li>On day 31: automated Celery task deletes all rows in users, user_profiles, health_metrics, meals, coaching_sessions, lab_results, user_integrations for that user_id</li>
+          <li>S3 objects (food photos, lab images) deleted by user_id prefix</li>
+          <li>Confirmation email sent when hard deletion completes</li>
+          <li>User can cancel deletion during the 30-day window via a link in the confirmation email</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> AUTH-001</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>NOTIF-001</strong>
+          <span class="badge badge-active">MUST</span>
+          <span class="body-text">Push Notification Setup</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Firebase Cloud Messaging integration. Request notification permission on first open (after onboarding, not immediately on install). Store FCM token server-side for targeting.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>FCM token generated and stored in users table on permission grant</li>
+          <li>Permission request shown after onboarding step 3 (location), with a clear value explanation: "We'll send your daily health brief"</li>
+          <li>FCM token refresh handled automatically when FCM rotates the token</li>
+          <li>Test notification can be sent from admin panel to a specific user_id</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> AUTH-002, PROFILE-001</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>HEALTH-001</strong>
+          <span class="badge badge-active">MUST</span>
+          <span class="body-text">HealthKit Integration (iOS)</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Request HealthKit permissions and read sleep analysis, HRV, resting heart rate, steps, and active energy on app launch. Sync to health_metrics via background task.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Permission request screen explains exactly what data will be read and why, with plain-language descriptions (not Apple's default sheet alone)</li>
+          <li>If permission denied, app functions with gracefully degraded plan accuracy; shows "Connect Apple Health to improve your plan" prompt</li>
+          <li>Reads last 7 days of data on first connection; then incremental sync on each app open</li>
+          <li>Sync result POSTed to /api/v1/health-data/sync; deduplication by (user_id, time, metric_type) on server</li>
+          <li>No health data logged to console, analytics, or Sentry events</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> AUTH-002</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>HEALTH-002</strong>
+          <span class="badge badge-active">MUST</span>
+          <span class="body-text">Health Connect Integration (Android)</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Android equivalent of HEALTH-001. Use the <code>health</code> Flutter package to read from Health Connect aggregator. Same data types, same sync endpoint, same deduplication logic.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Health Connect permission request includes all required permission strings in AndroidManifest.xml</li>
+          <li>Fallback behavior if Health Connect not available on device (older Android): show "Health tracking limited" notice, proceed without wearable data</li>
+          <li>Same data quality and sync behavior as HEALTH-001</li>
+          <li>Tested on Android 13+ (Health Connect native) and Android 9–12 (Health Connect installable)</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> AUTH-002</p>
+      </div>
+
+      <!-- M2 PLAN ENGINE -->
+      <h2 class="section-title" id="m2">Milestone 2 — Adaptive Plan Engine</h2>
+      <p class="body-text">M2 builds the core AI differentiation: taking the onboarding profile and generating a plan that is genuinely culturally calibrated, location-aware, and body-rhythm-aligned. This is the moment of proof. Every ticket in M2 is MUST.</p>
+
+      <div class="callout callout-tip">
+        <strong>AI Prompting Investment</strong><br />
+        PLAN-001 and COACH-001 both depend on well-engineered prompts. The quality of the generated plan is entirely a function of prompt quality — no amount of UI polish will rescue a plan that recommends grilled chicken and a 6am workout to a vegetarian night-owl in Birmingham. Invest 2–3 days in prompt engineering with real user profiles before building any plan display UI. Run the prompts manually via the Anthropic console with 20+ diverse profile inputs and evaluate the outputs against the "moment of recognition" standard described in the PRD.
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>PLAN-001</strong>
+          <span class="badge badge-active">MUST</span>
+          <span class="body-text">Ethnicity-Based Meal Plan Generator</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Given the user's ethnicities and dietary preferences, generate a 7-day meal plan using the Claude API with culturally appropriate foods. The South Asian food database is built first; expansion hooks are in place for other cuisines.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Generated plan includes real dish names from the user's cuisine (e.g. "Poha with peanuts and curry leaves" not "grain dish with legumes")</li>
+          <li>Macros for each meal are calculated and stored; totals match daily caloric target ± 10%</li>
+          <li>Dietary restrictions are enforced without exception (halal, vegetarian, allergens)</li>
+          <li>Plan is stored in PostgreSQL and retrievable from GET /api/v1/nutrition/meal-plan</li>
+          <li>Meal plan generation completes in under 30 seconds for 95% of requests</li>
+          <li>If generation fails (Claude API timeout), return the last cached plan + "Updating your plan" notice; never show a blank plan screen</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> PROFILE-001, AUTH-002</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>PLAN-002</strong>
+          <span class="badge badge-active">MUST</span>
+          <span class="body-text">Location-Aware Exercise Planning</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Use the user's city and country to adapt exercise recommendations to local climate, season, and likely infrastructure availability. A user in Houston in July gets different outdoor advice than one in London in January.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Exercise recommendations reference the user's city explicitly ("For Houston's summer heat...")</li>
+          <li>Climate inference is based on city + current month (no real-time weather API required in v1)</li>
+          <li>Gym availability inferred from country/city tier: major Western cities assume gym access available; recommendations offer home workout alternatives for all plans regardless</li>
+          <li>Exercise plan stored as part of the week's plan structure in PostgreSQL alongside the meal plan</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> PLAN-001 (same plan generation call)</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>PLAN-003</strong>
+          <span class="badge badge-active">MUST</span>
+          <span class="body-text">Body Rhythm Scheduling</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Read <code>usual_wake_time</code> and <code>usual_sleep_time</code> from the user profile and use them to schedule meal windows, intermittent fasting windows (if applicable), and workout timing recommendations around the user's actual circadian cycle rather than a default 6am–10pm assumption.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Meal times in the generated plan align with the user's wake time: first meal within 1 hour of wake time (or 2 hours for IF plans)</li>
+          <li>A user who wakes at 2pm receives an afternoon breakfast and a late-night dinner; the plan acknowledges the schedule without judgment</li>
+          <li>Peak energy window (user-provided in onboarding) is used to place the most demanding workout in that window</li>
+          <li>Ramadan mode: if user has flagged Ramadan active, sehri is scheduled 30 minutes before Fajr and iftar at Maghrib (using approximate prayer time calculation based on city + date)</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> PLAN-001, PROFILE-001</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>PLAN-004</strong>
+          <span class="badge badge-active">MUST</span>
+          <span class="body-text">Plan Review Screen</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Display the generated 7-day plan to the user after onboarding step 6 (plan generation). The review screen must create the moment of recognition. Allow the user to adjust individual meals or workout suggestions before confirming.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Plan displayed as a scrollable 7-day view with clear day headings and meal sections</li>
+          <li>Each meal shows: dish name, macro summary (cal / protein / carbs / fat), and meal type</li>
+          <li>Loading screen during generation shows progressive status messages: "Reading your food heritage..." → "Adapting to your timezone..." → "Building your first week..."</li>
+          <li>User can tap any meal to replace it ("Suggest something else"); triggers a targeted re-generation for that meal slot only</li>
+          <li>Confirm button stores the approved plan and navigates to the main app dashboard</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> PLAN-001, PLAN-002, PLAN-003</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>PLAN-005</strong>
+          <span class="badge badge-active">MUST</span>
+          <span class="body-text">Plan Storage &amp; Dashboard Display</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Store the confirmed plan in PostgreSQL and display it on the app's main dashboard as the default home screen. Today's meals and today's workout are the primary content surface of the home screen.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Plan stored with status = 'active' in a plans table; GET endpoint returns current day's plan slice</li>
+          <li>Home screen shows: today's meal plan (3–5 meal slots), today's workout, and the daily brief (empty state until COACH-001 is built)</li>
+          <li>Plan survives app close and reopen without re-fetching (cached in Isar local DB)</li>
+          <li>Past days are accessible via a horizontal scroll calendar strip</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> PLAN-004</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>PLAN-006</strong>
+          <span class="badge badge-next">SHOULD</span>
+          <span class="body-text">Plan Refresh</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Regenerate the plan weekly (automatic) or on user request. Refresh takes updated health data and any profile changes into account. The previous plan is archived, not deleted.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Celery scheduled task triggers plan refresh every Sunday at 9pm user-local time</li>
+          <li>User can manually trigger a refresh from the Plan screen; refresh costs one "plan refresh" credit per month on Free tier (unlimited on Plus/Pro)</li>
+          <li>Previous plan stored with status = 'archived'; accessible from plan history screen</li>
+          <li>Refresh incorporates last 7 days of health metrics from wearable sync if available</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> PLAN-005, HEALTH-001</p>
+      </div>
+
+      <!-- M3 AI COACHING -->
+      <h2 class="section-title" id="m3">Milestone 3 — AI Coaching</h2>
+      <p class="body-text">M3 builds the ongoing relationship with the AI coach. The plan from M2 answers "what should I do this week?" — M3 answers "how am I doing?" and "I have a question." The daily brief is the habit-forming touchpoint; the chat interface is the depth layer.</p>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>COACH-001</strong>
+          <span class="badge badge-active">MUST</span>
+          <span class="body-text">Daily Brief Generation</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Every morning (at user-local wake time + 30 minutes), a Celery task generates a personalized daily brief using the past 7 days of health context. The brief includes: yesterday's health snapshot, today's plan highlights, one actionable insight, and one motivational observation grounded in the user's actual data.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Celery beat task runs at (wake_time + 30min) in user's timezone daily; handles timezone edge cases correctly</li>
+          <li>Brief generated using the system prompt template in <code>app/core/ai/prompts.py</code> with last 7 days of metrics injected</li>
+          <li>Generated brief cached in Redis with a 24-hour TTL; GET /ai/daily-brief returns cached version instantly</li>
+          <li>Brief displayed on home screen in a dedicated card above the plan; max 4 sentences</li>
+          <li>Push notification sent with brief headline at generation time (if NOTIF-001 complete)</li>
+          <li>If no health data available (wearable not connected), brief acknowledges this and uses profile-only context</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> PLAN-005, HEALTH-001 or HEALTH-002, NOTIF-001</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>COACH-002</strong>
+          <span class="badge badge-active">MUST</span>
+          <span class="body-text">Chat Interface</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> A real-time chat interface with the AI health coach. User messages are sent to the Claude API with a system prompt that includes the user's health context snapshot and the last 10 messages of conversation history. Responses stream to the UI.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Chat interface uses the coaching chat bubble components from the Frontend Spec</li>
+          <li>Streaming response: text appears character-by-character as Claude streams tokens; no jarring full-message pop-in</li>
+          <li>Full conversation stored in coaching_sessions.messages JSONB after each exchange</li>
+          <li>Health context snapshot injected at session start: includes current plan, last 7 days of key metrics, user goals, profile summary</li>
+          <li>Free users see remaining message count ("2 of 3 messages today") with upgrade prompt when exhausted</li>
+          <li>AI never claims to be human; never provides specific medical diagnoses; prefixes medical-adjacent advice with appropriate disclaimer</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> PROFILE-001, HEALTH-001, PLAN-005</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>COACH-003</strong>
+          <span class="badge badge-next">SHOULD</span>
+          <span class="body-text">Voice Mode</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Allow users to speak to their AI coach using the device microphone. Speech is transcribed via speech_to_text, sent to the Claude API as text, and the response is read aloud via flutter_tts.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Voice mode toggled from within the chat interface via a microphone button</li>
+          <li>Transcription displayed in the user bubble so the user can verify what was sent</li>
+          <li>TTS reads the AI response at a comfortable pace (1.0x speed default, adjustable)</li>
+          <li>Voice mode is not the default; text chat is always available as the primary interface</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> COACH-002</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>COACH-004</strong>
+          <span class="badge badge-next">SHOULD</span>
+          <span class="body-text">Suggested Questions</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Display 3 contextual question chips below the chat input, generated based on the user's current health state and plan. Tapping a chip pre-fills the message input. Regenerated daily based on fresh context.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Suggestion chips are specific to the user's context (e.g. "Why is my HRV low this week?" not "How can I improve my health?")</li>
+          <li>Generated daily as part of the daily brief Celery task; cached alongside the brief</li>
+          <li>3 chips shown; user can dismiss individual chips; chips reload after a message is sent</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> COACH-001, COACH-002</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>COACH-005</strong>
+          <span class="badge badge-future">COULD</span>
+          <span class="body-text">Pinned Insights</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Users can long-press any AI message in the chat to pin it to their profile as a saved insight. Pinned insights appear in a dedicated "Your insights" section in the profile tab.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Long-press gesture on AI bubble shows "Pin this insight" action sheet</li>
+          <li>Pinned insights stored in a separate table (user_id, coaching_session_id, message_index, content, pinned_at)</li>
+          <li>Maximum 20 pinned insights per user; older pins can be deleted</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> COACH-002</p>
+      </div>
+
+      <!-- M4 NUTRITION & TRACKING -->
+      <h2 class="section-title" id="m4">Milestone 4 — Nutrition &amp; Tracking</h2>
+      <p class="body-text">M4 builds the logging layer: food, hydration, and health metric visualization. These features make VITARA a daily-use app rather than a one-time plan generator. The MUST tickets here are minimum for launch; the SHOULD/COULD tickets improve daily engagement but don't block the core value prop.</p>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>NUT-001</strong>
+          <span class="badge badge-active">MUST</span>
+          <span class="body-text">Manual Food Logging</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Search the food database (USDA FoodData Central + Open Food Facts) and log individual foods with quantity. Calculate meal macros and store in the meals table. South Asian foods must be findable by their actual names.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Search returns results from both USDA and Open Food Facts, deduplicated and ranked by relevance</li>
+          <li>"Dal makhani", "roti", "poha", "biryani", "chapati" all return accurate results as the top hit</li>
+          <li>Quantity input supports both gram-weight and common unit measures (1 chapati, 1 katori, 1 cup)</li>
+          <li>Logged meal macros appear on the home screen daily summary within 3 seconds of logging</li>
+          <li>Macro data stored in meals table; accessible via coaching context for AI-informed suggestions</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> AUTH-002, PLAN-005</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>NUT-002</strong>
+          <span class="badge badge-next">SHOULD</span>
+          <span class="body-text">Barcode Food Scanner</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Use the device camera to scan a product barcode. Look up the barcode in Open Food Facts API. Auto-fill the food logging form with product nutrition data.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Barcode scanner uses <code>mobile_scanner</code> Flutter package; real-time camera feed with targeting overlay</li>
+          <li>Successful scan auto-populates food name and nutrition data; user confirms quantity before logging</li>
+          <li>If barcode not found in Open Food Facts: show "Product not found — search manually" fallback</li>
+          <li>Works with EAN-13 (UK/EU) and UPC-A (US) barcodes</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> NUT-001</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>NUT-003</strong>
+          <span class="badge badge-future">COULD</span>
+          <span class="body-text">Photo Food Recognition</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> User takes a photo of a meal; GPT-4o Vision identifies the foods and returns estimated nutrition data. User confirms or adjusts before logging. Plus/Pro tier only.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Photo upload via POST /api/v1/nutrition/photo; processed server-side (API key not exposed to client)</li>
+          <li>Response includes: identified food items, estimated quantities, total macros with confidence note</li>
+          <li>User can edit any field before confirming the log; confidence note displayed for low-confidence identifications</li>
+          <li>Photo deleted from S3 within 24 hours unless user explicitly saves the meal log with photo</li>
+          <li>Paywalled behind Plus/Pro; Free users see feature preview with upgrade prompt</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> NUT-001, SUBS-001</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>NUT-004</strong>
+          <span class="badge badge-future">COULD</span>
+          <span class="body-text">Voice Food Logging</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> "I just ate two chapatis and a bowl of dal makhani" — user speaks a meal description; NLP parses it into individual food items and quantities; user confirms before logging.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Speech recognized via <code>speech_to_text</code>; transcription sent to Claude API for food extraction as a structured task (not a coaching call)</li>
+          <li>Extracted foods displayed as a list for confirmation before logging</li>
+          <li>Handles common South Asian food names and quantity descriptions ("one katori", "two rotis")</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> NUT-001, COACH-003</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>METRIC-001</strong>
+          <span class="badge badge-active">MUST</span>
+          <span class="body-text">Health Dashboard</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Display this week's key health metrics — sleep duration, HRV, resting heart rate, daily steps, active energy — as a clean dashboard using fl_chart. Each metric shows current value + 7-day trend.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Dashboard accessible from bottom nav "Health" tab</li>
+          <li>Each metric displayed as a HealthMetricCard (from Frontend Spec) with value, unit, trend arrow, and 7-day average</li>
+          <li>Trend lines rendered with fl_chart; 7-day bar or line chart for each metric</li>
+          <li>If no wearable data: dashboard shows "Connect Apple Health or Google Health to see your metrics" with a connect button</li>
+          <li>Semantic labels on all charts for screen reader accessibility</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> HEALTH-001 or HEALTH-002</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>METRIC-002</strong>
+          <span class="badge badge-next">SHOULD</span>
+          <span class="body-text">Trend Analysis (7d / 30d / 90d)</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Allow users to switch between 7-day, 30-day, and 90-day time range views for each health metric. The TimescaleDB backend is already set up to support these queries efficiently.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Time range toggle (7d / 30d / 90d) on each metric detail screen</li>
+          <li>30d and 90d views use weekly aggregates to keep chart legible (daily data points on 7d view)</li>
+          <li>Backend query uses TimescaleDB time_bucket() for aggregation; must respond in under 500ms</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> METRIC-001</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>WATER-001</strong>
+          <span class="badge badge-next">SHOULD</span>
+          <span class="body-text">Hydration Tracker</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Daily water intake goal (calculated from weight + activity level + climate) with quick-add buttons (200ml, 250ml, 350ml, 500ml). Progress ring on the home screen.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Daily goal calculated at plan generation time; stored in user plan data</li>
+          <li>Quick-add buttons on home screen; custom amount input available via tap-and-hold</li>
+          <li>Today's intake stored in health_metrics (metric_type = 'water_ml', source = 'manual')</li>
+          <li>Hydration progress ring on home screen updates in real time on each log</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> PLAN-005</p>
+      </div>
+
+      <!-- M5 POLISH & LAUNCH -->
+      <h2 class="section-title" id="m5">Milestone 5 — Polish &amp; Launch</h2>
+      <p class="body-text">M5 makes the app shippable: subscription gates, empty states, contextual notifications, performance optimization, and App Store submission. None of these tickets add new features — they make existing features production-ready.</p>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>SUBS-001</strong>
+          <span class="badge badge-active">MUST</span>
+          <span class="body-text">Subscription Paywall</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> RevenueCat integration for in-app subscription. Free tier (3 AI messages/day, no plan refresh, no photo logging) vs. Plus ($12/mo, full coaching + plan refresh + photo logging). Paywall screen shown when free limit is reached.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>RevenueCat SDK initialized with correct project credentials for App Store and Play Store</li>
+          <li>Paywall screen shows Plus vs. Free comparison clearly; no dark patterns</li>
+          <li>Purchase flow uses native StoreKit (iOS) and Google Play Billing (Android) via RevenueCat</li>
+          <li>RevenueCat webhook updates subscription_tier in users table within 30 seconds of purchase</li>
+          <li>Trial period (7 days free Plus) configured in RevenueCat; auto-converts to paid after trial unless cancelled</li>
+          <li>Subscription tier checked server-side on all gated routes — never trust client-side tier claim only</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> AUTH-002, PROFILE-001</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>ONBOARDING-001</strong>
+          <span class="badge badge-active">MUST</span>
+          <span class="body-text">Empty States &amp; Tutorial</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Every screen that can be empty (no health data, no meals logged today, no coaching history) must have a helpful empty state that explains what the screen will show and how to get there. No blank screens.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Health dashboard empty state: illustration + "Connect Apple Health to see your metrics" + connect button</li>
+          <li>Chat history empty state: "Start a conversation with your health coach" + suggested first questions</li>
+          <li>Meal log empty state: "Nothing logged yet today" + quick-add button + "Your plan suggests [today's first meal]" nudge</li>
+          <li>All empty state illustrations are culturally neutral (abstract, not food/person imagery)</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> All M1–M4 MUST tickets</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>NOTIF-002</strong>
+          <span class="badge badge-next">SHOULD</span>
+          <span class="body-text">Contextual Reminders</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Scheduled push notifications for meal times, workout windows, and water intake — all scheduled relative to the user's actual plan and wake/sleep times, not a fixed 12pm reminder.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Meal reminders sent 15 minutes before each planned meal time</li>
+          <li>Workout reminder sent at the scheduled workout window start</li>
+          <li>Hydration reminder sent every 2 hours between wake time and 2 hours before bedtime</li>
+          <li>All reminders are cancelable from notification settings; system respects quiet hours (no notifications within 1 hour of bedtime)</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> NOTIF-001, PLAN-005</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>PERF-001</strong>
+          <span class="badge badge-active">MUST</span>
+          <span class="body-text">Performance Optimization</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Ensure the app opens fast and scrolls fluidly on mid-range devices. Health data loading must be paginated and lazy; local Isar cache must be the first data source for all home screen content.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>Cold start to home screen: under 3 seconds on a mid-range Android device (Pixel 6a equivalent)</li>
+          <li>Home screen content served from Isar local cache first; network refresh happens in background</li>
+          <li>Health metric list virtualized (ListView.builder, not Column with all widgets); no jank on 90-day history scroll</li>
+          <li>Images lazy-loaded with placeholder; no layout shift when images load</li>
+          <li>Flutter DevTools performance overlay shows no frames consistently above 16ms on home screen scroll</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> METRIC-001, PLAN-005</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>TEST-001</strong>
+          <span class="badge badge-active">MUST</span>
+          <span class="body-text">Core User Journey Tests</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> End-to-end integration tests covering the critical user journey: register → verify email → complete onboarding → generate plan → view plan → send one coaching message. Must pass on both iOS and Android simulators in CI.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>E2E tests written with flutter_test + integration_test package</li>
+          <li>Test covers: registration, email verification (stubbed), 7-screen onboarding, plan generation (mocked Claude API response), plan review, coaching chat (mocked response)</li>
+          <li>Tests run in GitHub Actions on every PR to main; PR cannot be merged if tests fail</li>
+          <li>Backend API integration tests cover: auth flow, profile CRUD, health data sync deduplication, plan generation endpoint, subscription webhook processing</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> All M1–M4 MUST tickets</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <strong>RELEASE-001</strong>
+          <span class="badge badge-active">MUST</span>
+          <span class="body-text">App Store Submission</span>
+        </div>
+        <p class="body-text"><strong>Description:</strong> Prepare and submit VITARA to the iOS App Store and Google Play Store. Includes screenshots, metadata, privacy nutrition labels, and App Store Review preparation.</p>
+        <p class="body-text"><strong>Acceptance Criteria:</strong></p>
+        <ul class="body-text">
+          <li>App Store Connect: 6.5" iPhone screenshots, 12.9" iPad screenshots (if applicable), app description (250 words), privacy nutrition labels accurately reflecting all data collected</li>
+          <li>Google Play Console: feature graphic, phone screenshots, full description, data safety form</li>
+          <li>HealthKit usage description strings in Info.plist accurately describe each permission (App Review team reads these)</li>
+          <li>All third-party SDKs declared in App Store privacy labels (RevenueCat, Firebase, Sentry, Anthropic API)</li>
+          <li>Pre-launch security checklist (from Security &amp; Access doc) 100% complete before submission</li>
+        </ul>
+        <p class="body-text"><strong>Dependencies:</strong> All MUST tickets across M1–M5, Pre-Launch Security Checklist complete</p>
+      </div>
+
+      <!-- PRIORITY SUMMARY -->
+      <h2 class="section-title" id="priority-summary">Priority Summary</h2>
+      <table class="comparison-table">
+        <thead>
+          <tr><th>Milestone</th><th>Total Tickets</th><th>MUST</th><th>SHOULD</th><th>COULD</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>M1: Foundation</strong></td><td>9</td><td>6 (AUTH-001, AUTH-002, PROFILE-001, PROFILE-003, NOTIF-001, HEALTH-001, HEALTH-002)</td><td>2 (AUTH-003, PROFILE-002)</td><td>0</td></tr>
+          <tr><td><strong>M2: Plan Engine</strong></td><td>6</td><td>5 (PLAN-001 through PLAN-005)</td><td>1 (PLAN-006)</td><td>0</td></tr>
+          <tr><td><strong>M3: AI Coaching</strong></td><td>5</td><td>2 (COACH-001, COACH-002)</td><td>2 (COACH-003, COACH-004)</td><td>1 (COACH-005)</td></tr>
+          <tr><td><strong>M4: Nutrition &amp; Tracking</strong></td><td>7</td><td>2 (NUT-001, METRIC-001)</td><td>3 (NUT-002, METRIC-002, WATER-001)</td><td>2 (NUT-003, NUT-004)</td></tr>
+          <tr><td><strong>M5: Polish &amp; Launch</strong></td><td>6</td><td>4 (SUBS-001, ONBOARDING-001, PERF-001, TEST-001, RELEASE-001)</td><td>1 (NOTIF-002)</td><td>0</td></tr>
+          <tr style="background:#EAF2EC;"><td><strong>Total</strong></td><td><strong>33</strong></td><td><strong>19 MUST</strong></td><td><strong>9 SHOULD</strong></td><td><strong>3 COULD</strong></td></tr>
+        </tbody>
+      </table>
+
+      <!-- AI PROMPT TEMPLATES -->
+      <h2 class="section-title" id="prompt-templates">AI Prompt Templates</h2>
+      <p class="body-text">These three prompt templates are the starting point for <code>app/core/ai/prompts.py</code>. They should be treated as living documents — refined through testing with real user profiles. The JSON placeholder blocks represent data that is injected programmatically at runtime.</p>
+
+      <div class="callout callout-tip">
+        <strong>Prompt Engineering Before UI</strong><br />
+        Run these prompts directly in the Anthropic Workbench with 20 diverse user profiles before writing any Flutter code that displays plan output. If the prompts don't produce the "moment of recognition" for a vegetarian Gujarati in Washington DC, a night-shift nurse from Lagos in London, and a Mexican-American night owl in Houston — the UI is irrelevant. The prompts are the product.
+      </div>
+
+      <h3 class="section-title" style="font-size:1.05rem;margin-top:1.5rem;">Template 1 — Daily Brief Generation</h3>
+      <pre class="code-block">You are VITARA, an adaptive health coach with deep knowledge of nutrition,
+exercise science, and cultural food systems. Your role is to give brief,
+specific, actionable daily health guidance.
+
+Today's date: {current_date}
+User timezone: {user_timezone}
+
+USER PROFILE SUMMARY:
+- Name: {first_name}
+- Age: {age}, {biological_sex}
+- Ethnicity/food heritage: {ethnicities}
+- Location: {city}, {country}
+- Health goals: {health_goals}
+- Known conditions: {health_conditions}
+- Usual wake time: {wake_time}, bedtime: {sleep_time}
+- Dietary preferences: {dietary_preferences}
+
+YESTERDAY'S HEALTH METRICS:
+{health_metrics_json}
+
+TODAY'S PLAN HIGHLIGHTS:
+{todays_meals}
+{todays_workout}
+
+Write a daily brief in exactly 3–4 sentences. Tone: warm, specific, informed.
+Do not use generic motivational language. Reference the user's actual data.
+Acknowledge their cultural context when relevant (food names, timing practices).
+End with one concrete, specific thing to do differently today based on their
+metrics — not a generic tip, but one grounded in their data.
+
+Do not use the user's name more than once. Do not use emojis.</pre>
+
+      <h3 class="section-title" style="font-size:1.05rem;margin-top:1.5rem;">Template 2 — Adaptive Meal Plan Generation</h3>
+      <pre class="code-block">You are VITARA's nutrition planning engine. Your task is to generate a
+culturally accurate, nutritionally balanced 7-day meal plan.
+
+USER PROFILE:
+- Ethnicities/food heritage: {ethnicities}
+- Location: {city}, {country} (current season: {season})
+- Wake time: {wake_time} | Bedtime: {sleep_time} | Peak energy: {peak_energy_time}
+- Dietary type: {dietary_preferences}
+- Dietary restrictions/allergies: {dietary_restrictions}
+- Health conditions: {health_conditions}
+- Health goal: {primary_goal}
+- Daily caloric target: {caloric_target} kcal
+- Protein target: {protein_target}g | Carbs: {carbs_target}g | Fat: {fat_target}g
+- Ramadan active: {ramadan_active}
+
+CULTURAL CONTEXT REFERENCE:
+{rag_retrieved_food_knowledge}
+
+Generate a 7-day meal plan. For each day provide: breakfast, lunch, dinner,
+and 1–2 snacks. Format as structured JSON.
+
+Requirements:
+1. Use real dish names from the user's food heritage — not generic descriptions.
+   "Upma with vegetables" not "grain porridge". "Chicken biryani" not "rice dish".
+2. Meal times must align with the user's wake/sleep schedule.
+3. Macro totals per day must be within 10% of targets.
+4. All dietary restrictions are non-negotiable — double-check every meal.
+5. Variety: no dish repeated in the same position (e.g. same breakfast) more
+   than twice in the 7 days.
+6. If Ramadan active: replace breakfast/dinner with sehri/iftar; adjust
+   caloric distribution to 40% sehri / 60% iftar.
+
+Output format: valid JSON only. No markdown code fences. No commentary outside
+the JSON object.</pre>
+
+      <h3 class="section-title" style="font-size:1.05rem;margin-top:1.5rem;">Template 3 — Conversational Coaching Chat</h3>
+      <pre class="code-block">You are VITARA, a personal health coach with expertise in nutrition,
+exercise science, cultural food systems, and sleep physiology.
+
+USER PROFILE:
+- Ethnicity/food heritage: {ethnicities}
+- Location: {city}, {country}
+- Health goals: {health_goals}
+- Health conditions: {health_conditions}
+- Dietary preferences: {dietary_preferences}
+- Wake: {wake_time} | Bedtime: {sleep_time}
+
+CURRENT HEALTH CONTEXT (last 7 days):
+{health_context_json}
+
+CURRENT PLAN SUMMARY:
+{current_plan_summary}
+
+CONVERSATION HISTORY (last 10 messages):
+{conversation_history}
+
+Guidelines for your response:
+- Be specific and personal. Reference the user's actual data, foods, and
+  circumstances. Generic health advice ("sleep 8 hours") without context
+  is not acceptable.
+- Cultural competency is mandatory. Know what poha is. Know that a Gujarati
+  vegetarian's protein sources differ from a Punjabi non-vegetarian's.
+- For any question that touches on a diagnosed medical condition, recommend
+  consulting their doctor and provide the evidence-based context you have,
+  clearly distinguished from medical advice.
+- Do not claim to be a doctor. Do not diagnose. Do not prescribe medications.
+- Response length: conversational (2–5 sentences for most questions).
+  Longer only for "explain this to me" questions.
+- Do not start your response with "Absolutely!" or "Great question!" or
+  any filler affirmation. Start directly with substance.</pre>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <a href="../../" class="footer-logo">VITARA</a>
+    <p class="footer-copy">&copy; 2026 VITARA. Adaptive health coaching.</p>
+    <nav class="footer-links">
+      <a href="../../product/">Product</a>
+      <a href="../../docs/">Docs</a>
+      <a href="../../about/">About</a>
+      <a href="mailto:hello@vitara.health">Contact</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../../assets/js/main.js"></script>
+</body>
+</html>

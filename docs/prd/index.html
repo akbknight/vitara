@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Requirements Document — VITARA Docs</title>
+  <meta name="description" content="VITARA PRD: product hypothesis, MVP scope, user personas, feature tiers, and beachhead strategy for the adaptive health coaching platform." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='14' fill='%231A5C3F'/><text x='50' y='76' font-family='Georgia,serif' font-size='66' font-weight='600' fill='white' text-anchor='middle'>V</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+</head>
+<body>
+
+<header id="nav">
+  <div class="container nav-inner">
+    <a href="../../" class="logo">VITARA</a>
+    <nav class="nav-links" aria-label="Site navigation">
+      <a href="../../product/" class="nav-link">Product</a>
+      <a href="../../how-it-works/" class="nav-link">How It Works</a>
+      <a href="../../docs/" class="nav-link active">Docs</a>
+      <a href="../../about/" class="nav-link">About</a>
+    </nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+    </button>
+    <a href="../../#waitlist" class="btn btn-sm nav-desktop-cta">Join waitlist</a>
+  </div>
+</header>
+<div id="nav-mobile" class="nav-mobile">
+  <a href="../../product/">Product</a>
+  <a href="../../how-it-works/">How It Works</a>
+  <a href="../../docs/">Docs</a>
+  <a href="../../about/">About</a>
+  <a href="../../#waitlist" class="btn btn-sm">Join waitlist</a>
+</div>
+
+<main class="docs-main">
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <p class="docs-sidebar-title">Documentation</p>
+      <nav class="docs-nav" aria-label="Documentation">
+        <a href="../" class="docs-nav-item">Overview</a>
+        <a href="../prd/" class="docs-nav-item active">Product Requirements</a>
+        <a href="../technical-architecture/" class="docs-nav-item">Technical Architecture</a>
+        <a href="../security-access/" class="docs-nav-item">Security &amp; Access</a>
+        <a href="../frontend-spec/" class="docs-nav-item">Frontend Specification</a>
+        <a href="../feature-tickets/" class="docs-nav-item">Feature Tickets</a>
+      </nav>
+    </aside>
+
+    <div class="docs-content">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../" class="breadcrumb-item">Home</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="../" class="breadcrumb-item">Docs</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item active">Product Requirements</span>
+      </nav>
+
+      <div class="docs-meta">
+        <span class="badge badge-next">v0.1 · Customer Discovery</span>
+        <span>Last updated: June 2026</span>
+        <span>Author: VITARA Founding Team</span>
+      </div>
+
+      <h1 class="page-title">Product Requirements Document</h1>
+      <p class="lead">This document captures the core product hypothesis, user personas, feature scope, and strategic constraints for VITARA's first release. It is a living document — updated as discovery interviews reshape our understanding of what users actually need.</p>
+
+      <div class="toc">
+        <p class="docs-sidebar-title">On this page</p>
+        <ol>
+          <li><a href="#executive-summary">Executive Summary</a></li>
+          <li><a href="#problem-statement">Problem Statement</a></li>
+          <li><a href="#target-users">Target Users</a></li>
+          <li><a href="#product-vision">Product Vision</a></li>
+          <li><a href="#feature-tiers">Feature Tiers</a></li>
+          <li><a href="#onboarding-flow">User Onboarding Flow</a></li>
+          <li><a href="#mvp-scope">MVP Scope</a></li>
+          <li><a href="#not-in-v1">What Is Not in v1</a></li>
+          <li><a href="#success-metrics">Success Metrics</a></li>
+          <li><a href="#tradeoffs">Key Tradeoffs</a></li>
+          <li><a href="#beachhead">Beachhead Strategy</a></li>
+          <li><a href="#platform-vision">Long-term Platform Vision</a></li>
+        </ol>
+      </div>
+
+      <!-- EXECUTIVE SUMMARY -->
+      <h2 class="section-title" id="executive-summary">Executive Summary</h2>
+      <p class="body-text">VITARA's core hypothesis is that health apps fail not because users lack willpower, but because the plans they receive were never built for them — the food is wrong, the schedule ignores their reality, and the advice comes from a cultural context they don't inhabit. VITARA is an adaptive health coaching platform that generates personalized health, diet, and exercise guidance calibrated to three axes that existing apps ignore entirely: the user's cultural background and food heritage, their physical location and environment, and their body's natural rhythm. The MVP targets one narrowly defined cohort — South Asian diaspora adults aged 22–38 living in the US and UK — not because VITARA is a South Asian app, but because this group represents the sharpest version of the problem: metabolically at-risk, culturally underserved by Western health tooling, and willing to pay for something that actually fits their life.</p>
+
+      <div class="callout callout-tip">
+        <strong>Founder Note</strong><br />
+        We are in customer discovery. This document reflects current hypotheses, not validated requirements. Every feature listed here should be treated as a question to test, not a decision already made. We are not building anything until we have confirmed, through direct user interviews, that the problem is real, the solution direction is right, and people will actually pay for it. The correct output of this phase is conviction — or a pivot.
+      </div>
+
+      <!-- PROBLEM STATEMENT -->
+      <h2 class="section-title" id="problem-statement">Problem Statement</h2>
+      <p class="body-text">Generic health apps are built on a set of unstated cultural defaults: a Western diet framework (MyFitnessPal's food database skews heavily American), a 9-to-5 lifestyle assumption, and a morning-workout worldview. For the majority of the world's population — and especially for immigrants and diaspora communities navigating between two food cultures — these defaults produce recommendations that range from useless to actively demoralizing.</p>
+
+      <p class="body-text">Consider Rahul. He's 29, works in cybersecurity in Washington DC, and his parents are from Gujarat. He has a family history of type 2 diabetes, a moderately elevated fasting glucose reading from his last annual checkup, and a genuine desire to eat better. He downloaded three health apps last year. The first told him to eat grilled chicken and broccoli every day. The second had no idea what methi thepla was. The third gave him a workout schedule that started at 6 AM — before his shift, which starts at 7 AM — and by week two, he'd given up. Not because he didn't care. Because none of these apps knew anything about him.</p>
+
+      <p class="body-text">Three structural failures underlie every one of these experiences:</p>
+      <ul class="body-text">
+        <li><strong>Cultural defaults in food databases.</strong> Western-centric ingredient lists mean South Asian, West African, Latin American, and Middle Eastern home cooking is invisible to calorie trackers. Users either can't find their foods or receive wildly inaccurate macros.</li>
+        <li><strong>Location blindness.</strong> A workout plan that assumes access to a gym in December ignores that half the world doesn't have one. A hydration recommendation built for San Diego doesn't account for Houston in August or London in November.</li>
+        <li><strong>The 6 AM assumption.</strong> Every meal plan, every intermittent fasting window, every "best time to work out" recommendation is built for someone who wakes at 6 and sleeps at 10. Night workers, late chronotypes, Ramadan observers, and shift workers are invisible.</li>
+      </ul>
+
+      <p class="pullquote">"The problem isn't that people don't know what to do. It's that the tools that are supposed to help them have been built for someone else."</p>
+
+      <!-- TARGET USERS -->
+      <h2 class="section-title" id="target-users">Target Users</h2>
+      <p class="body-text">Four personas anchor our early discovery interviews. They are not exhaustive — VITARA's eventual market is broader — but they represent the sharpest versions of the problem we're solving.</p>
+
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Persona</th>
+            <th>Demographics</th>
+            <th>Core Pain</th>
+            <th>Health Context</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Rahul</strong></td>
+            <td>29, South Asian (Gujarati), Washington DC, cybersecurity analyst</td>
+            <td>Apps don't recognize his food; family metabolic history creates urgency but no tool speaks to it</td>
+            <td>Elevated fasting glucose, family history of T2DM, sedentary desk job, vegetarian by preference</td>
+          </tr>
+          <tr>
+            <td><strong>Amara</strong></td>
+            <td>34, Nigerian-British, London, NHS nurse (shift worker)</td>
+            <td>12-hour rotating shifts make any fixed meal schedule impossible; West African ingredients absent from every app she's tried</td>
+            <td>Irregular sleep, high job stress, iron deficiency, relies on Nigerian home cooking but wants to understand its macros</td>
+          </tr>
+          <tr>
+            <td><strong>Diego</strong></td>
+            <td>26, Mexican-American, Houston, warehouse supervisor</td>
+            <td>Night owl chronotype; 10 PM–6 AM schedule means every app's "morning routine" is his bedtime; Mexican food gets miscounted or ignored</td>
+            <td>Overweight, high sodium diet, wants to lose 20 lbs before his sister's wedding, physically active at work but not in structured exercise</td>
+          </tr>
+          <tr>
+            <td><strong>Fatima</strong></td>
+            <td>31, British-Pakistani, Birmingham, secondary school teacher</td>
+            <td>Observes Ramadan; no app handles fasting window nutrition coherently; needs plans that shift seasonally with prayer times</td>
+            <td>PCOS diagnosis, hormonal sensitivity to diet changes, needs culturally appropriate guidance during fasting periods</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- PRODUCT VISION -->
+      <h2 class="section-title" id="product-vision">Product Vision</h2>
+      <p class="body-text">VITARA's north star is a single moment: the end of a user's first onboarding session, when they see their generated plan for the first time and feel — not just intellectually register, but viscerally feel — that this was made for them. That the app knows what daal makhani is, knows they live in Houston and it's August, knows they're a night owl who peaks cognitively at 11 PM. That moment of recognition is the product. Everything else is infrastructure to make it happen reliably.</p>
+
+      <p class="body-text">This is not a feature list. It's a feeling we have to engineer. If users finish onboarding and think "this looks reasonable," we've failed. The bar is "this is the first health app that has ever understood me." That means the AI-generated plan must contain specific foods from their culture, workout timing that respects their chronotype, and language that acknowledges their actual life — not a projected ideal version of it.</p>
+
+      <p class="body-text">Long term, VITARA aims to be the health platform that travels with people — adapting as they move, age, change dietary practices, recover from illness, or shift goals. The cultural and circadian intelligence that makes onboarding feel personal is the same engine that makes long-term coaching genuinely useful.</p>
+
+      <!-- FEATURE TIERS -->
+      <h2 class="section-title" id="feature-tiers">Feature Tiers</h2>
+      <p class="body-text">Features are grouped into four tiers based on proximity to the core value proposition. Tier 1 features are the differentiators — if we cut them, we have nothing distinct. Tier 4 features are real opportunities but require the platform to be proven first.</p>
+
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Tier</th>
+            <th>In MVP</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Cultural food intelligence (ethnicity-aware meal plans)</td>
+            <td><span class="badge badge-active">Tier 1 · Core</span></td>
+            <td>Yes</td>
+            <td>Primary differentiator; without this we are another generic calorie tracker</td>
+          </tr>
+          <tr>
+            <td>Location-aware exercise and lifestyle planning</td>
+            <td><span class="badge badge-active">Tier 1 · Core</span></td>
+            <td>Yes</td>
+            <td>Climate and infrastructure vary enormously; city-aware recommendations are a concrete improvement over generic advice</td>
+          </tr>
+          <tr>
+            <td>Body rhythm alignment (circadian scheduling)</td>
+            <td><span class="badge badge-active">Tier 1 · Core</span></td>
+            <td>Yes</td>
+            <td>Sleep/wake input directly drives meal timing and workout windows; simple to collect, high impact</td>
+          </tr>
+          <tr>
+            <td>Goal and timeline input</td>
+            <td><span class="badge badge-next">Tier 2 · Supporting</span></td>
+            <td>Yes</td>
+            <td>Goal type (weight, energy, metabolic health) shapes plan direction; lightweight to implement</td>
+          </tr>
+          <tr>
+            <td>Food preference and restriction input</td>
+            <td><span class="badge badge-next">Tier 2 · Supporting</span></td>
+            <td>Yes</td>
+            <td>Vegetarian, vegan, halal, kosher, allergies — must be collected at onboarding or plans are unsafe</td>
+          </tr>
+          <tr>
+            <td>Basic health metrics input (height, weight, age, conditions)</td>
+            <td><span class="badge badge-next">Tier 2 · Supporting</span></td>
+            <td>Yes</td>
+            <td>Required for any caloric or macro calculation; also flags at-risk conditions for appropriate plan generation</td>
+          </tr>
+          <tr>
+            <td>Wearable integration (HealthKit / Health Connect)</td>
+            <td><span class="badge badge-next">Tier 3 · Optional v1</span></td>
+            <td>Yes (Phase 1)</td>
+            <td>Dramatically improves circadian accuracy; available through OS health APIs without requiring dedicated hardware</td>
+          </tr>
+          <tr>
+            <td>Household ingredient input</td>
+            <td><span class="badge badge-next">Tier 3 · Optional v1</span></td>
+            <td>Stretch</td>
+            <td>Adds friction at onboarding; better as a post-plan refinement ("what do you have at home?")</td>
+          </tr>
+          <tr>
+            <td>Live weather API integration</td>
+            <td><span class="badge badge-future">Tier 4 · Roadmap</span></td>
+            <td>No</td>
+            <td>City-level climate is sufficient for v1; real-time weather adds engineering complexity without proportional value</td>
+          </tr>
+          <tr>
+            <td>Doctor report generation</td>
+            <td><span class="badge badge-future">Tier 4 · Roadmap</span></td>
+            <td>No</td>
+            <td>Requires clinical review process, regulatory consideration, and a volume of health data we won't have at launch</td>
+          </tr>
+          <tr>
+            <td>Lab result OCR and interpretation</td>
+            <td><span class="badge badge-future">Tier 4 · Roadmap</span></td>
+            <td>No</td>
+            <td>High value, high complexity, high regulatory sensitivity — build after trust is established</td>
+          </tr>
+          <tr>
+            <td>Hair health tracking</td>
+            <td><span class="badge badge-future">Tier 4 · Roadmap</span></td>
+            <td>No</td>
+            <td>Niche enough that it fragments MVP focus; revisit for v2 with dedicated UX</td>
+          </tr>
+          <tr>
+            <td>Longevity score</td>
+            <td><span class="badge badge-future">Tier 4 · Roadmap</span></td>
+            <td>No</td>
+            <td>Requires longitudinal data and scientific validation; premature at launch</td>
+          </tr>
+          <tr>
+            <td>B2B corporate wellness</td>
+            <td><span class="badge badge-future">Tier 4 · Roadmap</span></td>
+            <td>No</td>
+            <td>Different sales motion, different product requirements; build individual product first</td>
+          </tr>
+          <tr>
+            <td>Social features (community, sharing)</td>
+            <td><span class="badge badge-future">Tier 4 · Roadmap</span></td>
+            <td>No</td>
+            <td>Privacy-sensitive health data + social features is a complex design problem; avoid until core coaching is proven</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ONBOARDING FLOW -->
+      <h2 class="section-title" id="onboarding-flow">User Onboarding Flow</h2>
+      <p class="body-text">Onboarding is the most critical user experience in VITARA. It collects the inputs that make the first plan feel personal, and it must do so without feeling like a medical intake form. The flow is designed to be conversational, fast (under 4 minutes), and to telegraph value at every step — each screen should make the user feel increasingly seen, not interrogated.</p>
+
+      <svg viewBox="0 0 900 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="VITARA onboarding flow: 7 steps from Welcome to Plan Review" style="width:100%;height:auto;display:block;margin:24px 0;">
+        <!-- Step boxes -->
+        <!-- Step 1 -->
+        <rect x="8" y="40" width="108" height="64" rx="8" fill="#F3F8F5" stroke="#1A5C3F" stroke-width="1.5"/>
+        <text x="62" y="67" font-family="Plus Jakarta Sans, sans-serif" font-size="9.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">Step 1</text>
+        <text x="62" y="82" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" fill="#1A5C3F" text-anchor="middle">Welcome +</text>
+        <text x="62" y="94" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" fill="#1A5C3F" text-anchor="middle">Goal Input</text>
+        <!-- Arrow 1→2 -->
+        <line x1="116" y1="72" x2="132" y2="72" stroke="#1A5C3F" stroke-width="1.5" marker-end="url(#arr)"/>
+        <!-- Step 2 -->
+        <rect x="133" y="40" width="108" height="64" rx="8" fill="#F3F8F5" stroke="#1A5C3F" stroke-width="1.5"/>
+        <text x="187" y="67" font-family="Plus Jakarta Sans, sans-serif" font-size="9.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">Step 2</text>
+        <text x="187" y="82" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" fill="#1A5C3F" text-anchor="middle">Ethnicity +</text>
+        <text x="187" y="94" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" fill="#1A5C3F" text-anchor="middle">Food Culture</text>
+        <!-- Arrow 2→3 -->
+        <line x1="241" y1="72" x2="257" y2="72" stroke="#1A5C3F" stroke-width="1.5" marker-end="url(#arr)"/>
+        <!-- Step 3 -->
+        <rect x="258" y="40" width="108" height="64" rx="8" fill="#F3F8F5" stroke="#1A5C3F" stroke-width="1.5"/>
+        <text x="312" y="67" font-family="Plus Jakarta Sans, sans-serif" font-size="9.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">Step 3</text>
+        <text x="312" y="82" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" fill="#1A5C3F" text-anchor="middle">Location +</text>
+        <text x="312" y="94" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" fill="#1A5C3F" text-anchor="middle">Environment</text>
+        <!-- Arrow 3→4 -->
+        <line x1="366" y1="72" x2="382" y2="72" stroke="#1A5C3F" stroke-width="1.5" marker-end="url(#arr)"/>
+        <!-- Step 4 -->
+        <rect x="383" y="40" width="108" height="64" rx="8" fill="#F3F8F5" stroke="#1A5C3F" stroke-width="1.5"/>
+        <text x="437" y="67" font-family="Plus Jakarta Sans, sans-serif" font-size="9.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">Step 4</text>
+        <text x="437" y="82" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" fill="#1A5C3F" text-anchor="middle">Body Rhythm</text>
+        <text x="437" y="94" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" fill="#1A5C3F" text-anchor="middle">Wake / Sleep / Peak</text>
+        <!-- Arrow 4→5 -->
+        <line x1="491" y1="72" x2="507" y2="72" stroke="#1A5C3F" stroke-width="1.5" marker-end="url(#arr)"/>
+        <!-- Step 5 -->
+        <rect x="508" y="40" width="108" height="64" rx="8" fill="#F3F8F5" stroke="#1A5C3F" stroke-width="1.5"/>
+        <text x="562" y="67" font-family="Plus Jakarta Sans, sans-serif" font-size="9.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">Step 5</text>
+        <text x="562" y="82" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" fill="#1A5C3F" text-anchor="middle">Dietary</text>
+        <text x="562" y="94" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" fill="#1A5C3F" text-anchor="middle">Preferences</text>
+        <!-- Arrow 5→6 -->
+        <line x1="616" y1="72" x2="632" y2="72" stroke="#1A5C3F" stroke-width="1.5" marker-end="url(#arr)"/>
+        <!-- Step 6 — Plan Generation (highlighted) -->
+        <rect x="633" y="32" width="112" height="80" rx="8" fill="#1A5C3F" stroke="#1A5C3F" stroke-width="1.5"/>
+        <text x="689" y="62" font-family="Plus Jakarta Sans, sans-serif" font-size="9.5" font-weight="700" fill="white" text-anchor="middle">Step 6</text>
+        <text x="689" y="78" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" fill="white" text-anchor="middle">AI Plan</text>
+        <text x="689" y="91" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" fill="white" text-anchor="middle">Generation</text>
+        <!-- Arrow 6→7 -->
+        <line x1="745" y1="72" x2="761" y2="72" stroke="#1A5C3F" stroke-width="1.5" marker-end="url(#arr)"/>
+        <!-- Step 7 -->
+        <rect x="762" y="40" width="108" height="64" rx="8" fill="#F3F8F5" stroke="#1A5C3F" stroke-width="1.5"/>
+        <text x="816" y="67" font-family="Plus Jakarta Sans, sans-serif" font-size="9.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">Step 7</text>
+        <text x="816" y="82" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" fill="#1A5C3F" text-anchor="middle">Plan Review</text>
+        <text x="816" y="94" font-family="Plus Jakarta Sans, sans-serif" font-size="8.5" fill="#1A5C3F" text-anchor="middle">+ Confirm</text>
+        <!-- Arrow marker -->
+        <defs>
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="#1A5C3F"/>
+          </marker>
+        </defs>
+        <!-- Label row -->
+        <text x="62" y="128" font-family="Plus Jakarta Sans, sans-serif" font-size="7.5" fill="#8C8C88" text-anchor="middle">~30 sec</text>
+        <text x="187" y="128" font-family="Plus Jakarta Sans, sans-serif" font-size="7.5" fill="#8C8C88" text-anchor="middle">~45 sec</text>
+        <text x="312" y="128" font-family="Plus Jakarta Sans, sans-serif" font-size="7.5" fill="#8C8C88" text-anchor="middle">~20 sec</text>
+        <text x="437" y="128" font-family="Plus Jakarta Sans, sans-serif" font-size="7.5" fill="#8C8C88" text-anchor="middle">~30 sec</text>
+        <text x="562" y="128" font-family="Plus Jakarta Sans, sans-serif" font-size="7.5" fill="#8C8C88" text-anchor="middle">~40 sec</text>
+        <text x="689" y="128" font-family="Plus Jakarta Sans, sans-serif" font-size="7.5" fill="#8C8C88" text-anchor="middle">~60 sec AI call</text>
+        <text x="816" y="128" font-family="Plus Jakarta Sans, sans-serif" font-size="7.5" fill="#8C8C88" text-anchor="middle">~30 sec</text>
+        <!-- Total time label -->
+        <text x="450" y="160" font-family="Plus Jakarta Sans, sans-serif" font-size="9" fill="#4A4A47" text-anchor="middle">Target total onboarding time: under 4 minutes</text>
+      </svg>
+
+      <p class="body-text">Step 6 is where the magic has to happen: the app calls the Claude API with the full profile context and generates a culturally appropriate, location-calibrated, body-rhythm-aligned plan in under 60 seconds. The loading screen during this step should not be a spinner — it should show what the AI is doing ("Reading your food heritage..." "Checking your timezone..." "Building your first week...") to build anticipation and telegraph the personalization that's coming.</p>
+
+      <!-- MVP SCOPE -->
+      <h2 class="section-title" id="mvp-scope">MVP Scope</h2>
+      <p class="body-text">The MVP does exactly three things well: it onboards a user into a rich contextual profile (ethnicity, location, sleep/wake rhythms, dietary preferences, health conditions, goals), it generates an adaptive 7-day health and nutrition plan using that context, and it provides an ongoing AI coaching loop where the user can ask questions, get daily briefs, and refine their plan. That's it. No social features. No wearable sync at launch (wearable data improves plans but isn't required for them). No lab result uploads. No doctor reports. No B2B features.</p>
+
+      <p class="body-text">The MVP is deliberately narrow because the core hypothesis — that cultural and circadian personalization creates meaningfully better plans — has to be proven before we build infrastructure around it. If users don't feel that moment of recognition at the end of onboarding, none of the roadmap features matter.</p>
+
+      <div class="callout callout-warning">
+        <strong>MVP Constraint</strong><br />
+        Expanding scope before validating the core personalization hypothesis is the fastest way to build the wrong product confidently. Every feature added to MVP increases the surface area for failure while diluting engineering focus from the three things that actually test the hypothesis. The temptation to add the longevity score, the barcode scanner, and the community forum is real — resist it until we have 200 users who feel undeniably understood.
+      </div>
+
+      <!-- NOT IN V1 -->
+      <h2 class="section-title" id="not-in-v1">What Is Not in v1</h2>
+      <ul class="body-text">
+        <li><strong>Real-time weather integration</strong> — City-level climate inference is sufficient for workout and hydration recommendations. Live weather adds engineering overhead and API dependency without proportional plan quality improvement.</li>
+        <li><strong>Doctor report generation</strong> — Requires clinical review, careful regulatory framing, and longitudinal health data we won't have at launch. Potentially valuable at v2+ when we have 6+ months of user data.</li>
+        <li><strong>Lab result OCR and interpretation</strong> — GPT-4o Vision can read blood panels, but the interpretation workflow requires significant prompt engineering and trust-building before we can deploy it responsibly.</li>
+        <li><strong>Hair health module</strong> — Genuine unmet need in South Asian communities. Deferred because it requires a distinct UX and content system that fragments MVP focus.</li>
+        <li><strong>Longevity score</strong> — Requires 90+ days of longitudinal data and scientific validation methodology before it means anything credible.</li>
+        <li><strong>Social / community features</strong> — Privacy-sensitive health data and social mechanics are a complex combination. We don't want to be the app where someone's cousin sees their weight trend.</li>
+        <li><strong>B2B / corporate wellness</strong> — Completely different sales motion, procurement cycle, and product requirements. Build the consumer product first.</li>
+        <li><strong>Fitbit / Garmin / Oura integrations</strong> — HealthKit and Health Connect cover the vast majority of wearable data through OS-level aggregation. Dedicated integrations are Phase 2.</li>
+        <li><strong>Web app</strong> — Mobile-first because health tracking is a phone behavior. Web dashboard may make sense for plan review but is not part of the initial release.</li>
+      </ul>
+
+      <!-- SUCCESS METRICS -->
+      <h2 class="section-title" id="success-metrics">Success Metrics</h2>
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Target (90-day post-launch)</th>
+            <th>Why It Matters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>7-day retention</td>
+            <td>&gt; 45%</td>
+            <td>If the first plan doesn't bring people back within a week, it didn't land. Industry benchmark for health apps is ~30%; we need to beat it.</td>
+          </tr>
+          <tr>
+            <td>Onboarding completion rate</td>
+            <td>&gt; 75%</td>
+            <td>Drop-off during onboarding means the flow is too long or asks for too much. This is a product quality signal, not just a marketing funnel metric.</td>
+          </tr>
+          <tr>
+            <td>Plan relevance score (1–10 self-report)</td>
+            <td>&gt; 7.5 average</td>
+            <td>The moment of recognition is the product. If users don't rate their first plan as highly relevant, the personalization engine isn't working.</td>
+          </tr>
+          <tr>
+            <td>Time to first coaching message</td>
+            <td>&lt; 24 hours post-onboarding</td>
+            <td>Measures whether users see the AI coach as something to use, not just something that ran once. Fast engagement predicts retention.</td>
+          </tr>
+          <tr>
+            <td>Trial to paid conversion</td>
+            <td>&gt; 15%</td>
+            <td>SaaS health apps typically see 8–12% free-to-paid; 15% is achievable if perceived value is high. This validates the subscription model.</td>
+          </tr>
+          <tr>
+            <td>D30 retention</td>
+            <td>&gt; 25%</td>
+            <td>A month is long enough to see whether the plan is actually being followed. D30 retention separates novelty from genuine utility.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- TRADEOFFS -->
+      <h2 class="section-title" id="tradeoffs">Key Tradeoffs</h2>
+
+      <div class="card-grid">
+        <div class="card">
+          <strong class="body-text">Mobile-first vs. Web-first</strong>
+          <p class="body-text">Health tracking is inherently a phone behavior — food logging, sleep check-ins, and coaching conversations happen in context, not at a desk. We're building Flutter mobile first. The tradeoff: no web onboarding means we miss users who prefer to start on desktop. We accept this to ship faster and stay focused.</p>
+        </div>
+        <div class="card">
+          <strong class="body-text">Subscription vs. Free</strong>
+          <p class="body-text">We're charging from day one (free trial, then $12/mo for Plus). Free models optimize for acquisition over retention, and we need retention signals fast. The tradeoff: slower early user numbers. We're willing to have 200 paying users who genuinely benefit over 2,000 free users who churn after a week.</p>
+        </div>
+        <div class="card">
+          <strong class="body-text">AI-generated plans vs. Dietitian-supervised</strong>
+          <p class="body-text">AI-generated plans are scalable; dietitian-supervised plans are safer and more defensible. We generate with Claude API and add prominent disclaimers that VITARA is not medical advice. The tradeoff: regulatory and liability exposure if we don't communicate this clearly. We'll add dietitian review as a paid tier later.</p>
+        </div>
+        <div class="card">
+          <strong class="body-text">Beachhead depth vs. Broad market</strong>
+          <p class="body-text">Focusing on South Asian diaspora means we build the South Asian food database deeply before expanding. The tradeoff: slower TAM expansion. But winning one segment credibly is worth more than being mediocre across five. Word of mouth in tight diaspora communities travels fast.</p>
+        </div>
+      </div>
+
+      <!-- BEACHHEAD STRATEGY -->
+      <h2 class="section-title" id="beachhead">Beachhead Strategy</h2>
+      <p class="body-text">South Asian diaspora in the US and UK is our beachhead segment — not our ceiling. We chose this group because the pain is acute (metabolic risk is disproportionately high; T2DM rates in South Asians are 3–5x higher than in white Europeans at the same BMI), the food culture gap is sharp (South Asian cooking is almost entirely absent from major health apps), and the community is tight (diaspora word of mouth is fast and high-trust).</p>
+
+      <p class="body-text">Winning in this segment means: (1) a food database that covers Indian, Pakistani, Bangladeshi, and Sri Lankan cooking at the ingredient and dish level, not just restaurant menu items; (2) plan language that references real foods by name — not "a grain and a legume" but "rice and dal"; (3) onboarding flows that handle cultural fasting practices (Navratri, Ramadan, Ekadashi) gracefully; and (4) exercise recommendations that account for home-based workout preferences common in diaspora households.</p>
+
+      <p class="body-text">Expansion sequence after South Asian diaspora: West African diaspora (UK and US), Latin American diaspora (US), East Asian diaspora (US/UK/Canada). Each expansion requires a new food database module and cultural configuration layer, but the core platform architecture supports it. We build the expansion hooks from day one — we just don't populate them until the beachhead is proven.</p>
+
+      <div class="stat-row">
+        <div>
+          <span class="eyebrow">US Market</span>
+          <p class="body-text">~4.7M South Asians in the US, median income 40% above US average, high health literacy</p>
+        </div>
+        <div>
+          <span class="eyebrow">UK Market</span>
+          <p class="body-text">~1.8M South Asians in the UK, NHS-aware, high T2DM prevalence, active diaspora health discourse</p>
+        </div>
+        <div>
+          <span class="eyebrow">TAM Signal</span>
+          <p class="body-text">Health &amp; wellness app market: $6.9B globally. Cultural personalization is untapped.</p>
+        </div>
+      </div>
+
+      <!-- PLATFORM VISION -->
+      <h2 class="section-title" id="platform-vision">Long-term Platform Vision</h2>
+      <p class="body-text">The endgame for VITARA is not a health app. It's a health intelligence layer that lives at the intersection of your biology, your culture, and your environment — and adapts continuously as all three change. In five years, VITARA knows your family history from uploaded lab results, your real-time metabolic state from a continuous glucose monitor, your local food availability from GPS-linked market data, and your evolving cultural context as you move between countries or adapt your dietary practices over time.</p>
+
+      <p class="body-text">B2B corporate wellness is a natural extension: employers with diverse workforces — particularly in healthcare, tech, and financial services — have a clear incentive to provide culturally intelligent health benefits that actually get used. The data infrastructure built for the consumer product supports this without fundamental rebuilding.</p>
+
+      <p class="body-text">The longevity score, doctor report generator, and hair health module are not distractions — they're the verticals that VITARA's personalization engine is uniquely positioned to address once the core platform has established trust. Each one requires the kind of cultural and biological context that generic health platforms cannot provide. We build them in sequence, not simultaneously, and only after we have the data density to do them credibly.</p>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <a href="../../" class="footer-logo">VITARA</a>
+    <p class="footer-copy">&copy; 2026 VITARA. Adaptive health coaching.</p>
+    <nav class="footer-links">
+      <a href="../../product/">Product</a>
+      <a href="../../docs/">Docs</a>
+      <a href="../../about/">About</a>
+      <a href="mailto:hello@vitara.health">Contact</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../../assets/js/main.js"></script>
+</body>
+</html>

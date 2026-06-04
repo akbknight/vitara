@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Technical Architecture Document — VITARA Docs</title>
+  <meta name="description" content="VITARA technical architecture: stack decisions, system diagram, database schema, AI integration layer, API endpoints, and deployment strategy." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='14' fill='%231A5C3F'/><text x='50' y='76' font-family='Georgia,serif' font-size='66' font-weight='600' fill='white' text-anchor='middle'>V</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+</head>
+<body>
+
+<header id="nav">
+  <div class="container nav-inner">
+    <a href="../../" class="logo">VITARA</a>
+    <nav class="nav-links" aria-label="Site navigation">
+      <a href="../../product/" class="nav-link">Product</a>
+      <a href="../../how-it-works/" class="nav-link">How It Works</a>
+      <a href="../../docs/" class="nav-link active">Docs</a>
+      <a href="../../about/" class="nav-link">About</a>
+    </nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+    </button>
+    <a href="../../#waitlist" class="btn btn-sm nav-desktop-cta">Join waitlist</a>
+  </div>
+</header>
+<div id="nav-mobile" class="nav-mobile">
+  <a href="../../product/">Product</a>
+  <a href="../../how-it-works/">How It Works</a>
+  <a href="../../docs/">Docs</a>
+  <a href="../../about/">About</a>
+  <a href="../../#waitlist" class="btn btn-sm">Join waitlist</a>
+</div>
+
+<main class="docs-main">
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <p class="docs-sidebar-title">Documentation</p>
+      <nav class="docs-nav" aria-label="Documentation">
+        <a href="../" class="docs-nav-item">Overview</a>
+        <a href="../prd/" class="docs-nav-item">Product Requirements</a>
+        <a href="../technical-architecture/" class="docs-nav-item active">Technical Architecture</a>
+        <a href="../security-access/" class="docs-nav-item">Security &amp; Access</a>
+        <a href="../frontend-spec/" class="docs-nav-item">Frontend Specification</a>
+        <a href="../feature-tickets/" class="docs-nav-item">Feature Tickets</a>
+      </nav>
+    </aside>
+
+    <div class="docs-content">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../" class="breadcrumb-item">Home</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="../" class="breadcrumb-item">Docs</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item active">Technical Architecture</span>
+      </nav>
+
+      <div class="docs-meta">
+        <span class="badge badge-next">v0.1 · Pre-development</span>
+        <span>Last updated: June 2026</span>
+        <span>Author: VITARA Engineering</span>
+      </div>
+
+      <h1 class="page-title">Technical Architecture Document</h1>
+      <p class="lead">This document describes the full technical stack for VITARA: why each technology was chosen, how the system components interact, the database schema, AI integration approach, and deployment topology. It is a reference for engineering decisions, not a build order — the actual sequence of implementation is tracked in the Feature Tickets doc.</p>
+
+      <div class="toc">
+        <p class="docs-sidebar-title">On this page</p>
+        <ol>
+          <li><a href="#executive-summary">Executive Summary</a></li>
+          <li><a href="#tech-stack">Tech Stack</a></li>
+          <li><a href="#system-diagram">System Architecture Diagram</a></li>
+          <li><a href="#file-structure">Backend File Structure</a></li>
+          <li><a href="#database-schema">Database Schema</a></li>
+          <li><a href="#ai-integration">AI Integration Layer</a></li>
+          <li><a href="#api-endpoints">Key API Endpoints</a></li>
+          <li><a href="#env-vars">Environment Variables</a></li>
+          <li><a href="#deployment">Deployment Architecture</a></li>
+          <li><a href="#scaling">Scaling Notes</a></li>
+          <li><a href="#monitoring">Monitoring &amp; Logging</a></li>
+        </ol>
+      </div>
+
+      <!-- EXECUTIVE SUMMARY -->
+      <h2 class="section-title" id="executive-summary">Executive Summary</h2>
+      <p class="body-text">VITARA's technical stack is built around three non-negotiable requirements: native mobile health data access, real-time AI coaching with deep health context, and secure storage of PHI-adjacent data. The mobile layer is Flutter 3.x — a single codebase that gives us HealthKit on iOS and Health Connect on Android without two separate engineering tracks. The backend is FastAPI on Python, chosen because the entire AI and data science ecosystem lives in Python and async FastAPI handles the mix of low-latency API calls and longer AI generation tasks efficiently. Health metrics are stored in PostgreSQL with TimescaleDB — a hypertable extension that makes time-series queries over months of health data fast and cheap without moving to a purpose-built time-series database. The AI layer is Claude API (claude-sonnet-4-6) for all coaching and plan generation, with ChromaDB providing RAG retrieval from the cultural food and health knowledge base. All of this runs on AWS, with ECS Fargate keeping infrastructure management overhead low while preserving the ability to scale horizontally when user volume demands it.</p>
+
+      <!-- TECH STACK -->
+      <h2 class="section-title" id="tech-stack">Tech Stack</h2>
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Layer</th>
+            <th>Technology</th>
+            <th>Why This Choice</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Mobile</td>
+            <td>Flutter 3.x (iOS + Android)</td>
+            <td>Single codebase for both platforms; best-in-class health integration packages (<code>health</code> for HealthKit/Health Connect); Riverpod for reactive state management; <code>isar</code> for fast local DB; avoids maintaining two native codebases at a startup headcount</td>
+          </tr>
+          <tr>
+            <td>Backend API</td>
+            <td>FastAPI (Python 3.12)</td>
+            <td>Async-native for concurrent AI calls and health data sync; typed with Pydantic; entire AI/ML ecosystem is Python; automatic OpenAPI docs; fast development iteration</td>
+          </tr>
+          <tr>
+            <td>Primary Database</td>
+            <td>PostgreSQL 15 + TimescaleDB</td>
+            <td>Relational integrity for user/profile data; TimescaleDB hypertables make time-range queries over health_metrics performant (automatic partitioning by time); avoids split-brain of separate OLTP + time-series databases</td>
+          </tr>
+          <tr>
+            <td>Cache &amp; Queue Broker</td>
+            <td>Redis (AWS ElastiCache)</td>
+            <td>Session token storage; API response caching for meal plans and daily briefs; Celery task broker for background jobs (daily brief generation, wearable sync)</td>
+          </tr>
+          <tr>
+            <td>File Storage</td>
+            <td>AWS S3 (private buckets)</td>
+            <td>Food photos and lab result images require private storage with short-lived signed URLs; S3 + CloudFront CDN handles delivery efficiently; no public bucket access</td>
+          </tr>
+          <tr>
+            <td>AI — Coaching &amp; Planning</td>
+            <td>Claude API (claude-sonnet-4-6)</td>
+            <td>Best-in-class instruction following for complex, context-heavy health prompts; large context window for health history injection; Anthropic's safety orientation aligns with health data sensitivity</td>
+          </tr>
+          <tr>
+            <td>AI — Food Photo Recognition</td>
+            <td>GPT-4o Vision (OpenAI)</td>
+            <td>GPT-4o Vision leads on food identification accuracy in third-party benchmarks; used only for photo-to-food parsing, not for health advice generation</td>
+          </tr>
+          <tr>
+            <td>AI — Knowledge Retrieval</td>
+            <td>ChromaDB</td>
+            <td>Open-source vector database for RAG over the cultural food/health knowledge base; lightweight, easy to self-host on ECS; retrieval augments Claude prompts with culturally specific nutritional knowledge</td>
+          </tr>
+          <tr>
+            <td>Authentication</td>
+            <td>JWT (15-min access + 30-day refresh rotation)</td>
+            <td>Stateless auth scales horizontally without shared session store; short-lived access tokens limit blast radius of token theft; refresh rotation invalidates stolen refresh tokens on reuse</td>
+          </tr>
+          <tr>
+            <td>Mobile Auth Storage</td>
+            <td>flutter_secure_storage (Keychain / Keystore)</td>
+            <td>iOS Keychain and Android Keystore are the only acceptable locations for tokens on mobile; never AsyncStorage or SharedPreferences</td>
+          </tr>
+          <tr>
+            <td>Hosting</td>
+            <td>AWS ECS Fargate + RDS + ElastiCache</td>
+            <td>Fargate removes EC2 fleet management; RDS manages PostgreSQL patching and backups; scales task count automatically based on CPU/memory; Multi-AZ RDS for high availability</td>
+          </tr>
+          <tr>
+            <td>CDN</td>
+            <td>AWS CloudFront</td>
+            <td>Signed URL delivery for private S3 content (lab images, food photos); HTTPS termination; edge caching for static assets; WAF integration for rate limiting</td>
+          </tr>
+          <tr>
+            <td>Subscriptions</td>
+            <td>RevenueCat</td>
+            <td>Handles App Store and Play Store receipt validation, subscription state webhooks, and entitlement management — avoids building this infrastructure in-house</td>
+          </tr>
+          <tr>
+            <td>Push Notifications</td>
+            <td>Firebase Cloud Messaging</td>
+            <td>Cross-platform (iOS + Android) push delivery; free at startup scale; well-supported Flutter SDK</td>
+          </tr>
+          <tr>
+            <td>Error Tracking</td>
+            <td>Sentry (Flutter + Python SDKs)</td>
+            <td>Full-stack error tracking from mobile to backend; performance monitoring; source maps for Flutter; alerts on error rate spikes</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-warning">
+        <strong>Phase 1 Simplification</strong><br />
+        During customer discovery and early private beta, the full AWS ECS + RDS + ElastiCache stack is over-engineered and expensive to operate. In Phase 1, use Railway or Render for FastAPI hosting, a managed PostgreSQL instance (Railway or Supabase) with the TimescaleDB extension enabled, and Upstash for Redis. Migrate to full AWS infrastructure when you have 500+ active users or a paying enterprise customer. The FastAPI code is identical in both environments — only the connection strings change.
+      </div>
+
+      <!-- SYSTEM ARCHITECTURE DIAGRAM -->
+      <h2 class="section-title" id="system-diagram">System Architecture Diagram</h2>
+
+      <svg viewBox="0 0 860 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="VITARA three-tier system architecture diagram" style="width:100%;height:auto;display:block;margin:24px 0;">
+        <defs>
+          <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="#1A5C3F"/>
+          </marker>
+        </defs>
+        <!-- Tier labels -->
+        <text x="14" y="58" font-family="Plus Jakarta Sans, sans-serif" font-size="9" font-weight="700" fill="#8C8C88" text-anchor="start" transform="rotate(-90, 14, 58)">CLIENT</text>
+        <text x="14" y="182" font-family="Plus Jakarta Sans, sans-serif" font-size="9" font-weight="700" fill="#8C8C88" text-anchor="start" transform="rotate(-90, 14, 182)">API TIER</text>
+        <text x="14" y="296" font-family="Plus Jakarta Sans, sans-serif" font-size="9" font-weight="700" fill="#8C8C88" text-anchor="start" transform="rotate(-90, 14, 296)">DATA TIER</text>
+
+        <!-- CLIENT TIER band -->
+        <rect x="30" y="16" width="820" height="88" rx="10" fill="#F3F8F5" stroke="#1A5C3F" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="50" y="35" font-family="Plus Jakarta Sans, sans-serif" font-size="10" font-weight="600" fill="#1A5C3F">Client Tier</text>
+        <!-- iOS App -->
+        <rect x="200" y="44" width="140" height="44" rx="7" fill="white" stroke="#1A5C3F" stroke-width="1.5"/>
+        <text x="270" y="62" font-family="Plus Jakarta Sans, sans-serif" font-size="9.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">Flutter iOS App</text>
+        <text x="270" y="76" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#4A4A47" text-anchor="middle">HealthKit · Keychain · Riverpod</text>
+        <!-- Android App -->
+        <rect x="500" y="44" width="150" height="44" rx="7" fill="white" stroke="#1A5C3F" stroke-width="1.5"/>
+        <text x="575" y="62" font-family="Plus Jakarta Sans, sans-serif" font-size="9.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">Flutter Android App</text>
+        <text x="575" y="76" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#4A4A47" text-anchor="middle">Health Connect · Keystore · Riverpod</text>
+
+        <!-- Arrows Client → API -->
+        <line x1="270" y1="88" x2="270" y2="130" stroke="#1A5C3F" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <line x1="575" y1="88" x2="575" y2="130" stroke="#1A5C3F" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+        <!-- API TIER band -->
+        <rect x="30" y="116" width="820" height="100" rx="10" fill="#EAF2EC" stroke="#1A5C3F" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="50" y="134" font-family="Plus Jakarta Sans, sans-serif" font-size="10" font-weight="600" fill="#1A5C3F">API Tier</text>
+        <!-- CloudFront -->
+        <rect x="50" y="142" width="110" height="56" rx="7" fill="white" stroke="#1A5C3F" stroke-width="1.5"/>
+        <text x="105" y="164" font-family="Plus Jakarta Sans, sans-serif" font-size="9.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">CloudFront</text>
+        <text x="105" y="178" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#4A4A47" text-anchor="middle">CDN + WAF</text>
+        <text x="105" y="190" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#4A4A47" text-anchor="middle">Signed URLs</text>
+        <!-- ALB -->
+        <rect x="200" y="142" width="110" height="56" rx="7" fill="white" stroke="#1A5C3F" stroke-width="1.5"/>
+        <text x="255" y="164" font-family="Plus Jakarta Sans, sans-serif" font-size="9.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">ALB</text>
+        <text x="255" y="178" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#4A4A47" text-anchor="middle">Load Balancer</text>
+        <text x="255" y="190" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#4A4A47" text-anchor="middle">TLS 1.3</text>
+        <!-- FastAPI -->
+        <rect x="360" y="142" width="130" height="56" rx="7" fill="white" stroke="#1A5C3F" stroke-width="1.5"/>
+        <text x="425" y="162" font-family="Plus Jakarta Sans, sans-serif" font-size="9.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">ECS Fargate</text>
+        <text x="425" y="176" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#4A4A47" text-anchor="middle">FastAPI API Tasks</text>
+        <text x="425" y="190" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#4A4A47" text-anchor="middle">+ Celery Workers</text>
+        <!-- Claude API external -->
+        <rect x="550" y="142" width="130" height="56" rx="7" fill="white" stroke="#8C8C88" stroke-width="1.5" stroke-dasharray="3,3"/>
+        <text x="615" y="162" font-family="Plus Jakarta Sans, sans-serif" font-size="9.5" font-weight="600" fill="#4A4A47" text-anchor="middle">External AI</text>
+        <text x="615" y="176" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#8C8C88" text-anchor="middle">Claude API (Anthropic)</text>
+        <text x="615" y="190" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#8C8C88" text-anchor="middle">GPT-4o Vision (OpenAI)</text>
+        <!-- Firebase external -->
+        <rect x="720" y="142" width="110" height="56" rx="7" fill="white" stroke="#8C8C88" stroke-width="1.5" stroke-dasharray="3,3"/>
+        <text x="775" y="164" font-family="Plus Jakarta Sans, sans-serif" font-size="9.5" font-weight="600" fill="#4A4A47" text-anchor="middle">Firebase FCM</text>
+        <text x="775" y="178" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#8C8C88" text-anchor="middle">Push Notifications</text>
+        <text x="775" y="190" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#8C8C88" text-anchor="middle">RevenueCat</text>
+
+        <!-- API tier horizontal arrows -->
+        <line x1="160" y1="170" x2="196" y2="170" stroke="#1A5C3F" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <line x1="310" y1="170" x2="356" y2="170" stroke="#1A5C3F" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <line x1="490" y1="170" x2="546" y2="170" stroke="#1A5C3F" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <line x1="680" y1="170" x2="716" y2="170" stroke="#8C8C88" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr2)"/>
+
+        <!-- Arrows API → Data -->
+        <line x1="390" y1="216" x2="250" y2="252" stroke="#1A5C3F" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <line x1="425" y1="216" x2="425" y2="252" stroke="#1A5C3F" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <line x1="460" y1="216" x2="590" y2="252" stroke="#1A5C3F" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+        <!-- DATA TIER band -->
+        <rect x="30" y="240" width="820" height="84" rx="10" fill="#F3F8F5" stroke="#1A5C3F" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="50" y="258" font-family="Plus Jakarta Sans, sans-serif" font-size="10" font-weight="600" fill="#1A5C3F">Data Tier</text>
+        <!-- RDS -->
+        <rect x="60" y="264" width="150" height="44" rx="7" fill="white" stroke="#1A5C3F" stroke-width="1.5"/>
+        <text x="135" y="282" font-family="Plus Jakarta Sans, sans-serif" font-size="9.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">RDS PostgreSQL</text>
+        <text x="135" y="296" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#4A4A47" text-anchor="middle">+ TimescaleDB · Multi-AZ</text>
+        <!-- Redis -->
+        <rect x="250" y="264" width="130" height="44" rx="7" fill="white" stroke="#1A5C3F" stroke-width="1.5"/>
+        <text x="315" y="282" font-family="Plus Jakarta Sans, sans-serif" font-size="9.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">Redis</text>
+        <text x="315" y="296" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#4A4A47" text-anchor="middle">ElastiCache · Celery broker</text>
+        <!-- S3 -->
+        <rect x="420" y="264" width="130" height="44" rx="7" fill="white" stroke="#1A5C3F" stroke-width="1.5"/>
+        <text x="485" y="282" font-family="Plus Jakarta Sans, sans-serif" font-size="9.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">AWS S3</text>
+        <text x="485" y="296" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#4A4A47" text-anchor="middle">Private buckets · KMS encryption</text>
+        <!-- ChromaDB -->
+        <rect x="590" y="264" width="130" height="44" rx="7" fill="white" stroke="#1A5C3F" stroke-width="1.5"/>
+        <text x="655" y="282" font-family="Plus Jakarta Sans, sans-serif" font-size="9.5" font-weight="600" fill="#1A5C3F" text-anchor="middle">ChromaDB</text>
+        <text x="655" y="296" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#4A4A47" text-anchor="middle">Vector store · RAG embeddings</text>
+        <!-- KMS -->
+        <rect x="738" y="264" width="100" height="44" rx="7" fill="white" stroke="#8C8C88" stroke-width="1.5"/>
+        <text x="788" y="282" font-family="Plus Jakarta Sans, sans-serif" font-size="9.5" font-weight="600" fill="#4A4A47" text-anchor="middle">AWS KMS</text>
+        <text x="788" y="296" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#8C8C88" text-anchor="middle">Key management</text>
+
+        <!-- Dashed = external services note -->
+        <rect x="32" y="320" width="12" height="8" fill="none" stroke="#8C8C88" stroke-width="1.5" stroke-dasharray="3,3"/>
+        <text x="50" y="328" font-family="Plus Jakarta Sans, sans-serif" font-size="8" fill="#8C8C88">= external service (third-party API)</text>
+      </svg>
+
+      <div class="callout callout-tip">
+        <strong>TimescaleDB Note</strong><br />
+        The <code>health_metrics</code> table is a TimescaleDB hypertable partitioned by time. This means a query like "give me all HRV readings for user X in the last 30 days" automatically scans only the relevant time partitions rather than the entire table. Without this, as each user accumulates months of wearable data (sleep, steps, HRV, heart rate — potentially 500+ rows per user per day), range queries degrade catastrophically. TimescaleDB is a PostgreSQL extension — it runs on the same RDS instance with no separate infrastructure, and all existing Postgres tooling, backups, and row-level security apply unchanged.
+      </div>
+
+      <!-- BACKEND FILE STRUCTURE -->
+      <h2 class="section-title" id="file-structure">Backend File Structure</h2>
+      <p class="body-text">The backend follows a domain-driven structure. The <code>api/v1/</code> layer handles HTTP routing and validation only; all business logic lives in <code>core/</code>; database models are in <code>models/</code>; and background jobs are in <code>tasks/</code>.</p>
+
+      <pre class="code-block">vitara-backend/
+├── app/
+│   ├── api/v1/
+│   │   ├── auth.py            # /auth/* — register, login, refresh, logout
+│   │   ├── users.py           # /users/* — profile CRUD, account deletion
+│   │   ├── health_data.py     # /health-data/* — wearable sync, metric queries
+│   │   ├── ai_coach.py        # /ai/* — chat, daily brief, suggested questions
+│   │   ├── nutrition.py       # /nutrition/* — food logging, meal plans
+│   │   ├── integrations.py    # /integrations/* — OAuth flows for wearables
+│   │   ├── reports.py         # /reports/* — export, doctor summaries (Phase 2)
+│   │   └── subscriptions.py   # /subscriptions/* — RevenueCat webhooks, tier check
+│   ├── core/
+│   │   ├── ai/
+│   │   │   ├── coach.py       # Claude API client, context assembly, response parsing
+│   │   │   ├── rag.py         # ChromaDB queries, embedding retrieval
+│   │   │   ├── prompts.py     # System prompt templates (daily brief, plan gen, chat)
+│   │   │   └── ethnicity.py   # Cultural food/health knowledge configuration per ethnicity
+│   │   ├── health/
+│   │   │   ├── processor.py   # Raw wearable data normalization + storage
+│   │   │   ├── scores.py      # Sleep score, activity score, recovery score computation
+│   │   │   └── alerts.py      # Anomaly detection, unusual metric flagging
+│   │   ├── nutrition/
+│   │   │   ├── planner.py     # Meal plan generation logic, macro calculation
+│   │   │   └── recognizer.py  # GPT-4o Vision food photo → structured nutrition data
+│   │   └── reports/
+│   │       └── generator.py   # PDF report generation (Phase 2)
+│   ├── models/
+│   │   ├── user.py            # SQLAlchemy models: User, UserProfile
+│   │   ├── health_metric.py   # HealthMetric (TimescaleDB hypertable)
+│   │   ├── meal.py            # Meal, LabResult
+│   │   ├── coaching_session.py # CoachingSession, UserIntegration
+│   │   └── subscription.py    # Subscription tier enum, expiry tracking
+│   ├── db/
+│   │   ├── session.py         # Async SQLAlchemy engine, session factory
+│   │   └── migrations/        # Alembic migration files
+│   └── tasks/
+│       ├── celery.py          # Celery app configuration, Redis broker setup
+│       ├── daily_brief.py     # Scheduled task: generate + cache daily brief at 5am user-time
+│       ├── sync_integrations.py # Poll wearable APIs, normalize, store health metrics
+│       └── report_gen.py      # Background PDF generation (Phase 2)</pre>
+
+      <!-- DATABASE SCHEMA -->
+      <h2 class="section-title" id="database-schema">Database Schema</h2>
+      <p class="body-text">The schema is split between core user/profile data (relational, rarely changing) and time-series health data (append-only, high volume). Row-level security ensures every query is user-scoped.</p>
+
+      <h3 class="section-title" style="font-size:1.1rem;margin-top:1.5rem;">users</h3>
+      <table class="comparison-table">
+        <thead><tr><th>Column</th><th>Type</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>id</td><td>UUID PRIMARY KEY</td><td>Generated with gen_random_uuid()</td></tr>
+          <tr><td>email</td><td>VARCHAR UNIQUE NOT NULL</td><td>Lowercased on write; index for login lookup</td></tr>
+          <tr><td>password_hash</td><td>TEXT NOT NULL</td><td>bcrypt; never stored plaintext</td></tr>
+          <tr><td>created_at</td><td>TIMESTAMPTZ DEFAULT now()</td><td></td></tr>
+          <tr><td>subscription_tier</td><td>ENUM ('free','plus','pro')</td><td>Authoritative tier from RevenueCat webhook sync</td></tr>
+          <tr><td>subscription_expires_at</td><td>TIMESTAMPTZ</td><td>NULL for free; checked on every protected route</td></tr>
+          <tr><td>is_active</td><td>BOOLEAN DEFAULT true</td><td>Set to false on account deletion request; hard delete after 30-day grace period</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="section-title" style="font-size:1.1rem;margin-top:1.5rem;">user_profiles</h3>
+      <table class="comparison-table">
+        <thead><tr><th>Column</th><th>Type</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>user_id</td><td>UUID FK → users(id)</td><td>1:1 with users; CASCADE DELETE</td></tr>
+          <tr><td>full_name</td><td>TEXT</td><td></td></tr>
+          <tr><td>date_of_birth</td><td>DATE</td><td>Used for age-adjusted recommendations</td></tr>
+          <tr><td>biological_sex</td><td>VARCHAR</td><td>Used for BMR calculation; optional</td></tr>
+          <tr><td>height_cm</td><td>NUMERIC(5,1)</td><td></td></tr>
+          <tr><td>weight_kg</td><td>NUMERIC(5,1)</td><td>Snapshot at onboarding; updates tracked in health_metrics</td></tr>
+          <tr><td>ethnicities</td><td>TEXT[]</td><td>Array allows mixed heritage (e.g. ['south_asian','east_african'])</td></tr>
+          <tr><td>health_goals</td><td>TEXT[]</td><td>e.g. ['weight_loss','metabolic_health','better_sleep']</td></tr>
+          <tr><td>health_conditions</td><td>TEXT[]</td><td>e.g. ['prediabetes','pcos']; informs plan safety guardrails</td></tr>
+          <tr><td>medications</td><td>JSONB</td><td>Optional; {name, dose, frequency} — used to flag interactions</td></tr>
+          <tr><td>dietary_preferences</td><td>TEXT[]</td><td>e.g. ['vegetarian','halal']</td></tr>
+          <tr><td>dietary_restrictions</td><td>TEXT[]</td><td>e.g. ['nut_allergy','lactose_intolerant']</td></tr>
+          <tr><td>activity_level</td><td>ENUM ('sedentary','light','moderate','active','very_active')</td><td>Self-reported at onboarding</td></tr>
+          <tr><td>usual_bedtime</td><td>TIME</td><td>Used to align meal/workout windows to chronotype</td></tr>
+          <tr><td>usual_wake_time</td><td>TIME</td><td>Used to set fasting window start and morning routine timing</td></tr>
+          <tr><td>timezone</td><td>VARCHAR</td><td>IANA timezone string e.g. 'America/New_York'</td></tr>
+          <tr><td>city</td><td>VARCHAR</td><td>User-entered; used for location-aware planning</td></tr>
+          <tr><td>country_code</td><td>CHAR(2)</td><td>ISO 3166-1 alpha-2</td></tr>
+          <tr><td>updated_at</td><td>TIMESTAMPTZ</td><td>ON UPDATE trigger</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="section-title" style="font-size:1.1rem;margin-top:1.5rem;">health_metrics <span class="badge badge-active" style="font-size:0.65rem;vertical-align:middle;margin-left:8px;">TimescaleDB hypertable</span></h3>
+      <table class="comparison-table">
+        <thead><tr><th>Column</th><th>Type</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>time</td><td>TIMESTAMPTZ NOT NULL</td><td>Hypertable partition key; indexed automatically</td></tr>
+          <tr><td>user_id</td><td>UUID FK → users(id)</td><td>Row-level security anchor</td></tr>
+          <tr><td>metric_type</td><td>VARCHAR NOT NULL</td><td>'heart_rate', 'hrv', 'steps', 'sleep_duration', 'sleep_quality', 'body_weight', 'blood_glucose', etc.</td></tr>
+          <tr><td>value</td><td>NUMERIC NOT NULL</td><td>Unitless number; interpreted with <code>unit</code> column</td></tr>
+          <tr><td>unit</td><td>VARCHAR</td><td>'bpm', 'ms', 'steps', 'min', 'kg', 'mmol/L', etc.</td></tr>
+          <tr><td>source</td><td>VARCHAR</td><td>'healthkit', 'health_connect', 'manual', 'fitbit', 'oura'</td></tr>
+          <tr><td>metadata</td><td>JSONB</td><td>Source-specific extras (e.g. sleep stage breakdown, GPS bounding box for activity)</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="section-title" style="font-size:1.1rem;margin-top:1.5rem;">meals</h3>
+      <table class="comparison-table">
+        <thead><tr><th>Column</th><th>Type</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>id</td><td>UUID PRIMARY KEY</td><td></td></tr>
+          <tr><td>user_id</td><td>UUID FK → users(id)</td><td></td></tr>
+          <tr><td>logged_at</td><td>TIMESTAMPTZ NOT NULL</td><td>When the meal was eaten (not when logged)</td></tr>
+          <tr><td>meal_type</td><td>ENUM ('breakfast','lunch','dinner','snack','pre_workout','post_workout','iftar','sehri')</td><td>Includes Ramadan-aware meal types</td></tr>
+          <tr><td>foods</td><td>JSONB NOT NULL</td><td>Array of {food_id, name, quantity_g, calories, protein, carbs, fat, source}</td></tr>
+          <tr><td>total_calories</td><td>NUMERIC(7,1)</td><td>Computed on write from foods array</td></tr>
+          <tr><td>total_protein</td><td>NUMERIC(6,1)</td><td>grams</td></tr>
+          <tr><td>total_carbs</td><td>NUMERIC(6,1)</td><td>grams</td></tr>
+          <tr><td>total_fat</td><td>NUMERIC(6,1)</td><td>grams</td></tr>
+          <tr><td>image_s3_key</td><td>TEXT</td><td>NULL unless photo-logged; private S3 key → signed URL on read</td></tr>
+          <tr><td>source</td><td>ENUM ('manual','barcode','photo','voice','plan')</td><td>How the meal was logged</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="section-title" style="font-size:1.1rem;margin-top:1.5rem;">coaching_sessions</h3>
+      <table class="comparison-table">
+        <thead><tr><th>Column</th><th>Type</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>id</td><td>UUID PRIMARY KEY</td><td></td></tr>
+          <tr><td>user_id</td><td>UUID FK → users(id)</td><td></td></tr>
+          <tr><td>session_type</td><td>ENUM ('daily_brief','chat','plan_generation','plan_refresh')</td><td></td></tr>
+          <tr><td>started_at</td><td>TIMESTAMPTZ NOT NULL</td><td></td></tr>
+          <tr><td>messages</td><td>JSONB NOT NULL</td><td>Array of {role, content, timestamp} — full conversation history</td></tr>
+          <tr><td>context_snapshot</td><td>JSONB</td><td>Health data context injected into system prompt at session start; stored for auditability</td></tr>
+          <tr><td>tokens_used</td><td>INTEGER</td><td>Total tokens consumed; used for cost monitoring and per-user token budgets</td></tr>
+        </tbody>
+      </table>
+
+      <!-- AI INTEGRATION LAYER -->
+      <h2 class="section-title" id="ai-integration">AI Integration Layer</h2>
+      <p class="body-text">All coaching intelligence flows through <code>app/core/ai/coach.py</code>. Every call to the Claude API is structured as follows:</p>
+
+      <ol class="body-text">
+        <li><strong>Context assembly:</strong> The coach module queries the database for the user's profile, last 7 days of health metrics (sleep, HRV, steps, meals), current plan, and any flagged alerts. This context is serialized to a structured JSON block that becomes part of the system prompt.</li>
+        <li><strong>RAG retrieval:</strong> <code>rag.py</code> queries ChromaDB with an embedding of the user's query or the day's health context to retrieve relevant cultural food knowledge, metabolic health guidelines, and exercise science references. Retrieved passages are appended to the system prompt as a "knowledge context" block.</li>
+        <li><strong>Prompt construction:</strong> <code>prompts.py</code> contains template functions for each session type. The daily brief template injects yesterday's metrics + today's plan. The plan generation template injects the full onboarding profile. The chat template injects a sliding window of the last 10 messages plus the current health snapshot.</li>
+        <li><strong>API call:</strong> The assembled messages array is sent to claude-sonnet-4-6 with a max_tokens ceiling of 1,500 for chat responses and 4,000 for plan generation. Temperature is 0.7 for coaching chat and 0.3 for plan generation (more deterministic).</li>
+        <li><strong>Response parsing and storage:</strong> The response is parsed (plan generation uses structured output with JSON blocks); the full exchange is appended to the coaching_sessions record along with the token count.</li>
+      </ol>
+
+      <p class="body-text">The ChromaDB collection contains: the VITARA cultural food database (South Asian dishes with macros, cooking methods, and ingredient variants), curated metabolic health guidelines for the conditions most common in the beachhead segment (T2DM risk, PCOS, hypertension), and exercise science references for body-rhythm-aligned training. Documents are chunked at 512 tokens with 64-token overlap and embedded using OpenAI's text-embedding-3-small.</p>
+
+      <!-- API ENDPOINTS -->
+      <h2 class="section-title" id="api-endpoints">Key API Endpoints</h2>
+      <table class="comparison-table">
+        <thead>
+          <tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>POST</td><td>/api/v1/auth/register</td><td>None</td><td>Create account; send email verification; return 201 with user ID</td></tr>
+          <tr><td>POST</td><td>/api/v1/auth/login</td><td>None</td><td>Validate credentials; return access token (15min) + refresh token (30d)</td></tr>
+          <tr><td>POST</td><td>/api/v1/auth/refresh</td><td>Refresh token</td><td>Rotate refresh token; return new access token + new refresh token</td></tr>
+          <tr><td>POST</td><td>/api/v1/auth/logout</td><td>Access token</td><td>Invalidate refresh token in Redis; client deletes stored tokens</td></tr>
+          <tr><td>GET</td><td>/api/v1/users/me</td><td>Access token</td><td>Return current user profile + subscription tier</td></tr>
+          <tr><td>PATCH</td><td>/api/v1/users/profile</td><td>Access token</td><td>Update any user_profiles field; triggers plan refresh flag</td></tr>
+          <tr><td>DELETE</td><td>/api/v1/users/me</td><td>Access token</td><td>Initiate account deletion; sets is_active=false; hard delete after 30 days</td></tr>
+          <tr><td>POST</td><td>/api/v1/health-data/sync</td><td>Access token</td><td>Batch upsert health metrics from wearable sync; deduplicates by (user_id, time, metric_type)</td></tr>
+          <tr><td>GET</td><td>/api/v1/health-data/{metric_type}</td><td>Access token</td><td>Query time-series data; supports ?start=&amp;end=&amp;interval= parameters</td></tr>
+          <tr><td>POST</td><td>/api/v1/ai/chat</td><td>Access token</td><td>Send user message to AI coach; returns streamed response; stores to coaching_sessions</td></tr>
+          <tr><td>GET</td><td>/api/v1/ai/daily-brief</td><td>Access token</td><td>Return today's pre-generated daily brief from Redis cache; regenerate if stale</td></tr>
+          <tr><td>POST</td><td>/api/v1/ai/generate-plan</td><td>Access token</td><td>Trigger full plan generation using current profile; returns plan JSON; requires onboarding complete</td></tr>
+          <tr><td>POST</td><td>/api/v1/nutrition/log</td><td>Access token</td><td>Log a meal with food items, quantities, and source type</td></tr>
+          <tr><td>GET</td><td>/api/v1/nutrition/meal-plan</td><td>Access token</td><td>Return current week's generated meal plan</td></tr>
+          <tr><td>POST</td><td>/api/v1/nutrition/photo</td><td>Plus/Pro</td><td>Upload food photo; route to GPT-4o Vision; return structured nutrition data</td></tr>
+          <tr><td>GET</td><td>/api/v1/integrations</td><td>Access token</td><td>List connected wearable integrations and their sync status</td></tr>
+          <tr><td>POST</td><td>/api/v1/integrations/{platform}/connect</td><td>Access token</td><td>Initiate OAuth flow for HealthKit/Health Connect/Fitbit/Oura</td></tr>
+          <tr><td>POST</td><td>/api/v1/subscriptions/webhook</td><td>RevenueCat signature</td><td>Handle RevenueCat purchase/renewal/expiry events; update subscription_tier in users table</td></tr>
+        </tbody>
+      </table>
+
+      <!-- ENVIRONMENT VARIABLES -->
+      <h2 class="section-title" id="env-vars">Environment Variables</h2>
+      <table class="comparison-table">
+        <thead>
+          <tr><th>Variable</th><th>Purpose</th><th>Example value format</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>DATABASE_URL</td><td>Async SQLAlchemy connection string to PostgreSQL+TimescaleDB</td><td>postgresql+asyncpg://user:pass@host:5432/vitara</td></tr>
+          <tr><td>REDIS_URL</td><td>Redis connection string for Celery broker + cache</td><td>redis://host:6379/0</td></tr>
+          <tr><td>ANTHROPIC_API_KEY</td><td>Claude API authentication for all coaching + plan generation calls</td><td>sk-ant-api03-...</td></tr>
+          <tr><td>OPENAI_API_KEY</td><td>GPT-4o Vision for food photo recognition only</td><td>sk-proj-...</td></tr>
+          <tr><td>AWS_ACCESS_KEY_ID</td><td>AWS SDK credential for S3 + KMS operations</td><td>AKIAIOSFODNN7EXAMPLE</td></tr>
+          <tr><td>AWS_SECRET_ACCESS_KEY</td><td>AWS SDK credential secret</td><td>wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY</td></tr>
+          <tr><td>AWS_S3_BUCKET</td><td>Private S3 bucket name for food photos and lab result images</td><td>vitara-user-uploads-prod</td></tr>
+          <tr><td>AWS_KMS_KEY_ID</td><td>KMS key ARN for OAuth token encryption in user_integrations</td><td>arn:aws:kms:us-east-1:123456789:key/uuid</td></tr>
+          <tr><td>JWT_SECRET_KEY</td><td>HMAC-SHA256 signing key for JWT access tokens</td><td>64+ character random string</td></tr>
+          <tr><td>REVENUECAT_API_KEY</td><td>RevenueCat server-side API key for purchase verification</td><td>sk_...</td></tr>
+          <tr><td>REVENUECAT_WEBHOOK_SECRET</td><td>Webhook signature verification for RevenueCat events</td><td>...</td></tr>
+          <tr><td>FCM_SERVER_KEY</td><td>Firebase Cloud Messaging server key for push notifications</td><td>AAAA...</td></tr>
+          <tr><td>SENTRY_DSN</td><td>Sentry project DSN for error reporting (backend)</td><td>https://...@sentry.io/...</td></tr>
+          <tr><td>CHROMADB_HOST</td><td>ChromaDB server host for RAG retrieval</td><td>chromadb.internal:8000</td></tr>
+          <tr><td>APP_ENV</td><td>Environment label for logging and feature flags</td><td>development / staging / production</td></tr>
+          <tr><td>ALLOWED_ORIGINS</td><td>CORS origins allowed to call the API</td><td>https://vitara.health,https://app.vitara.health</td></tr>
+        </tbody>
+      </table>
+
+      <!-- DEPLOYMENT -->
+      <h2 class="section-title" id="deployment">Deployment Architecture</h2>
+      <p class="body-text">Production runs entirely on AWS. The API runs as ECS Fargate tasks behind an Application Load Balancer. Celery workers run as a separate Fargate task definition sharing the same ECR image. RDS PostgreSQL is Multi-AZ with automatic failover; TimescaleDB extension is enabled at RDS provision time. ElastiCache Redis runs in cluster mode with one replica. All ECS tasks run in private subnets; only the ALB has a public-facing security group. S3 buckets have no public access; all object reads go through CloudFront with signed URLs. AWS WAF is attached to CloudFront and the ALB, with rate limiting rules (100 req/min per IP on auth endpoints, 1000 req/min general).</p>
+
+      <p class="body-text">CI/CD: GitHub Actions builds the Docker image on merge to main, pushes to ECR, and triggers an ECS rolling deployment. Database migrations run as a one-off ECS task before the new API version takes traffic.</p>
+
+      <!-- SCALING -->
+      <h2 class="section-title" id="scaling">Scaling Notes</h2>
+      <ul class="body-text">
+        <li><strong>API layer:</strong> ECS Fargate auto-scales on CPU &gt; 70%; each task handles ~200 concurrent connections with FastAPI's async workers. Horizontal scaling is trivial.</li>
+        <li><strong>Celery workers:</strong> Daily brief generation has a predictable spike at local morning time per user's timezone; Celery tasks are time-zone-aware and distributed throughout the UTC day window. Scale worker count by queue depth metric.</li>
+        <li><strong>TimescaleDB:</strong> Chunk compression kicks in for partitions older than 7 days; data retention policy deletes raw wearable samples after 1 year (aggregated summaries retained indefinitely). These policies keep the health_metrics table manageable at scale.</li>
+        <li><strong>Claude API costs:</strong> Monitor tokens_used per user per month. Implement per-user token budgets that throttle AI requests gracefully (return cached last response + "updating shortly" message) to prevent runaway costs from heavy users.</li>
+      </ul>
+
+      <!-- MONITORING -->
+      <h2 class="section-title" id="monitoring">Monitoring &amp; Logging</h2>
+      <p class="body-text">Three layers of observability:</p>
+      <ul class="body-text">
+        <li><strong>CloudWatch:</strong> ECS container metrics (CPU, memory, task count), RDS metrics (connection count, query latency, replication lag), ElastiCache metrics (memory usage, evictions), ALB access logs. Alarm on: API P99 latency &gt; 2s, error rate &gt; 1%, RDS connections &gt; 80% of max.</li>
+        <li><strong>Sentry:</strong> All unhandled exceptions in FastAPI and Flutter clients. Attach user ID and request ID to every event for correlation. Monitor for AI-specific errors (Claude API timeouts, malformed JSON in plan generation responses).</li>
+        <li><strong>CloudTrail:</strong> Full audit log of all AWS API calls. Required for any future SOC 2 or HIPAA alignment. Specifically: KMS key usage events (any access to encrypted OAuth tokens is logged), S3 access for lab result images, IAM role assumption events.</li>
+      </ul>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <a href="../../" class="footer-logo">VITARA</a>
+    <p class="footer-copy">&copy; 2026 VITARA. Adaptive health coaching.</p>
+    <nav class="footer-links">
+      <a href="../../product/">Product</a>
+      <a href="../../docs/">Docs</a>
+      <a href="../../about/">About</a>
+      <a href="mailto:hello@vitara.health">Contact</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../../assets/js/main.js"></script>
+</body>
+</html>

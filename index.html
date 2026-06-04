@@ -14,752 +14,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --cream:      #F8F7F3;
-      --white:      #FFFFFF;
-      --ink:        #111110;
-      --ink-2:      #4A4A47;
-      --ink-3:      #8C8C88;
-      --green:      #1A5C3F;
-      --green-dark: #12432D;
-      --green-light:#EAF2EC;
-      --green-tint: #F3F8F5;
-      --rule:       #E3E2DC;
-      --ff-serif:   'Cormorant Garamond', Georgia, serif;
-      --ff-sans:    'Plus Jakarta Sans', system-ui, sans-serif;
-      --max:        1120px;
-      --pad:        clamp(24px, 5vw, 80px);
-    }
-
-    html {
-      scroll-behavior: smooth;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    body {
-      background: var(--cream);
-      color: var(--ink);
-      font-family: var(--ff-sans);
-      font-size: 1rem;
-      line-height: 1.6;
-    }
-
-    a { color: inherit; }
-    button { font-family: inherit; cursor: pointer; border: none; }
-
-    /* LAYOUT */
-    .container {
-      width: 100%;
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 0 var(--pad);
-    }
-
-    /* TYPOGRAPHY TOKENS */
-    .eyebrow {
-      font-family: var(--ff-sans);
-      font-size: 0.75rem;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--green);
-      margin-bottom: 1.25rem;
-    }
-
-    .section-label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-family: var(--ff-sans);
-      font-size: 0.75rem;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--ink-3);
-      margin-bottom: 1.5rem;
-    }
-    .section-label::before {
-      content: '';
-      display: block;
-      width: 20px;
-      height: 1px;
-      background: var(--green);
-      flex-shrink: 0;
-    }
-
-    h1, h2, h3 {
-      font-family: var(--ff-serif);
-      line-height: 1.05;
-    }
-
-    .hero-title {
-      font-size: clamp(3.25rem, 6.5vw, 6rem);
-      font-weight: 600;
-      letter-spacing: -0.025em;
-      line-height: 1.0;
-      color: var(--ink);
-      margin-bottom: 1.75rem;
-    }
-
-    .section-title {
-      font-size: clamp(2.25rem, 4vw, 3.5rem);
-      font-weight: 600;
-      line-height: 1.08;
-      letter-spacing: -0.02em;
-      color: var(--ink);
-      margin-bottom: 1.5rem;
-      max-width: 14ch;
-    }
-
-    .section-title-wide { max-width: 22ch; }
-
-    .section-body {
-      font-size: 1.0625rem;
-      line-height: 1.78;
-      color: var(--ink-2);
-      max-width: 620px;
-    }
-    .section-body + .section-body { margin-top: 1.25rem; }
-
-    .pullquote {
-      font-family: var(--ff-serif);
-      font-size: clamp(1.4rem, 2.5vw, 2rem);
-      font-weight: 500;
-      font-style: italic;
-      line-height: 1.35;
-      color: var(--ink);
-      border-left: 2px solid var(--green);
-      padding-left: 1.5rem;
-      margin: 2.75rem 0;
-      max-width: 640px;
-    }
-
-    /* BUTTONS */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      font-family: var(--ff-sans);
-      font-weight: 600;
-      font-size: 0.9375rem;
-      border-radius: 6px;
-      transition: background 0.2s, color 0.2s;
-    }
-
-    .btn-primary {
-      background: var(--green);
-      color: var(--white);
-      padding: 0.8125rem 1.875rem;
-    }
-    .btn-primary:hover { background: var(--green-dark); }
-
-    .btn-ghost {
-      color: var(--ink-2);
-      padding: 0.8125rem 0;
-    }
-    .btn-ghost:hover { color: var(--ink); }
-
-    .btn-sm {
-      background: var(--green);
-      color: var(--white);
-      padding: 0.5rem 1.125rem;
-      font-size: 0.875rem;
-    }
-    .btn-sm:hover { background: var(--green-dark); }
-
-    /* NAV */
-    #nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      transition: background 0.3s, box-shadow 0.3s;
-    }
-    #nav.scrolled {
-      background: rgba(248, 247, 243, 0.95);
-      backdrop-filter: blur(12px);
-      box-shadow: 0 1px 0 var(--rule);
-    }
-
-    .nav-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 68px;
-    }
-
-    .logo {
-      font-family: var(--ff-serif);
-      font-size: 1.375rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      color: var(--green);
-      text-decoration: none;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 2.5rem;
-    }
-    .nav-links a {
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: var(--ink-2);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: var(--ink); }
-
-    /* HERO */
-    #hero {
-      min-height: 100svh;
-      display: flex;
-      align-items: center;
-      padding-top: 68px;
-    }
-    .hero-inner {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      padding: 72px var(--pad) 96px;
-    }
-    .hero-sub {
-      font-size: clamp(1rem, 1.5vw, 1.175rem);
-      line-height: 1.7;
-      color: var(--ink-2);
-      max-width: 540px;
-      margin-bottom: 2.75rem;
-    }
-    .hero-actions {
-      display: flex;
-      align-items: center;
-      gap: 2rem;
-    }
-    .hero-rule {
-      width: 36px;
-      height: 1px;
-      background: var(--rule);
-      margin-top: 4rem;
-    }
-
-    /* SECTIONS */
-    .section {
-      padding: 108px 0;
-      border-top: 1px solid var(--rule);
-    }
-
-    /* PROBLEM — three failure blocks */
-    .failures {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      margin-top: 3.5rem;
-      border: 1px solid var(--rule);
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .failure-item {
-      padding: 2rem 1.75rem;
-      background: var(--white);
-    }
-    .failure-item + .failure-item { border-left: 1px solid var(--rule); }
-    .failure-title {
-      font-family: var(--ff-sans);
-      font-size: 0.8125rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--ink-3);
-      margin-bottom: 0.75rem;
-    }
-    .failure-body {
-      font-size: 0.9375rem;
-      line-height: 1.68;
-      color: var(--ink-2);
-    }
-
-    /* APPROACH — dimension table */
-    .dimensions {
-      margin-top: 3.5rem;
-      border: 1px solid var(--rule);
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .dimension-row {
-      display: grid;
-      grid-template-columns: 200px 1fr;
-      background: var(--white);
-    }
-    .dimension-row + .dimension-row { border-top: 1px solid var(--rule); }
-    .dim-label {
-      padding: 2rem 1.75rem;
-      border-right: 1px solid var(--rule);
-    }
-    .dim-num {
-      font-family: var(--ff-sans);
-      font-size: 0.72rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      color: var(--green);
-      margin-bottom: 0.4rem;
-    }
-    .dim-name {
-      font-family: var(--ff-serif);
-      font-size: 1.2rem;
-      font-weight: 600;
-      line-height: 1.2;
-      color: var(--ink);
-    }
-    .dim-body {
-      padding: 2rem;
-      font-size: 0.9375rem;
-      line-height: 1.72;
-      color: var(--ink-2);
-      display: flex;
-      align-items: center;
-    }
-
-    /* COMPARISON — proper table */
-    .compare-context {
-      font-size: 0.875rem;
-      font-style: italic;
-      color: var(--ink-3);
-      margin-bottom: 2rem;
-      font-family: var(--ff-serif);
-    }
-    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .compare-table {
-      width: 100%;
-      min-width: 600px;
-      border-collapse: collapse;
-      border: 1px solid var(--rule);
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .compare-table thead tr { background: var(--green-tint); }
-    .compare-table th {
-      padding: 1rem 1.5rem;
-      font-family: var(--ff-sans);
-      font-size: 0.8rem;
-      font-weight: 600;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      text-align: left;
-      color: var(--ink-3);
-    }
-    .compare-table th.th-vitara { color: var(--green); }
-    .compare-table td {
-      padding: 1rem 1.5rem;
-      font-size: 0.9375rem;
-      line-height: 1.55;
-      color: var(--ink-2);
-      background: var(--white);
-      vertical-align: top;
-    }
-    .compare-table td.td-cat {
-      font-weight: 600;
-      font-size: 0.8125rem;
-      color: var(--ink);
-      background: var(--cream);
-      white-space: nowrap;
-      width: 130px;
-    }
-    .compare-table td.td-vitara { color: var(--ink); }
-    .compare-table tbody tr + tr td { border-top: 1px solid var(--rule); }
-
-    /* WHO — personas */
-    .personas {
-      margin-top: 3rem;
-      border-top: 1px solid var(--rule);
-    }
-    .persona-row {
-      display: grid;
-      grid-template-columns: 190px 1fr;
-      padding: 1.5rem 0;
-      border-bottom: 1px solid var(--rule);
-      gap: 2rem;
-    }
-    .persona-name-block {}
-    .persona-name {
-      font-family: var(--ff-serif);
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--ink);
-      line-height: 1.2;
-    }
-    .persona-meta {
-      font-family: var(--ff-sans);
-      font-size: 0.8rem;
-      font-weight: 400;
-      color: var(--ink-3);
-      margin-top: 0.2rem;
-    }
-    .persona-desc {
-      font-size: 0.9375rem;
-      line-height: 1.68;
-      color: var(--ink-2);
-    }
-
-    /* WHY NOW — reasons */
-    .reasons {
-      margin-top: 3.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 2.5rem;
-    }
-    .reason {
-      display: grid;
-      grid-template-columns: 36px 1fr;
-      gap: 1.5rem;
-    }
-    .reason-num {
-      font-family: var(--ff-serif);
-      font-size: 1.4rem;
-      font-weight: 500;
-      color: var(--green);
-      line-height: 1.4;
-    }
-    .reason h3 {
-      font-family: var(--ff-sans);
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--ink);
-      margin-bottom: 0.4rem;
-    }
-    .reason p {
-      font-size: 0.9375rem;
-      line-height: 1.72;
-      color: var(--ink-2);
-    }
-
-    /* ROADMAP */
-    .roadmap-phases {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      margin-top: 3rem;
-      border: 1px solid var(--rule);
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .phase {
-      padding: 2rem 1.75rem;
-      background: var(--white);
-    }
-    .phase + .phase { border-left: 1px solid var(--rule); }
-    .phase-badge {
-      display: inline-block;
-      padding: 0.2rem 0.6rem;
-      border-radius: 4px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 1rem;
-    }
-    .badge-active { background: var(--green-light); color: var(--green); }
-    .badge-next { background: #F0F0ED; color: var(--ink-3); }
-    .phase h3 {
-      font-family: var(--ff-serif);
-      font-size: 1.3rem;
-      font-weight: 600;
-      color: var(--ink);
-      margin-bottom: 0.75rem;
-    }
-    .phase p {
-      font-size: 0.9rem;
-      line-height: 1.68;
-      color: var(--ink-2);
-      margin-bottom: 1rem;
-    }
-    .phase ul { list-style: none; display: flex; flex-direction: column; gap: 0.35rem; }
-    .phase li {
-      font-size: 0.875rem;
-      color: var(--ink-2);
-      display: flex;
-      gap: 0.5rem;
-    }
-    .phase li::before { content: '—'; color: var(--green); opacity: 0.6; flex-shrink: 0; }
-
-    /* FOUNDER */
-    .founder-block {
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 4rem;
-      align-items: start;
-      padding: 3rem;
-      background: var(--white);
-      border: 1px solid var(--rule);
-      border-radius: 10px;
-    }
-    .founder-name {
-      font-family: var(--ff-serif);
-      font-size: 2rem;
-      font-weight: 600;
-      color: var(--ink);
-      line-height: 1.1;
-      margin-bottom: 0.4rem;
-    }
-    .founder-role {
-      font-size: 0.875rem;
-      color: var(--ink-3);
-      line-height: 1.65;
-    }
-    .founder-rule {
-      width: 32px;
-      height: 1px;
-      background: var(--green);
-      margin: 1.5rem 0;
-    }
-    .founder-quote {
-      font-family: var(--ff-serif);
-      font-size: 1.35rem;
-      font-weight: 400;
-      font-style: italic;
-      line-height: 1.55;
-      color: var(--ink);
-      margin-bottom: 1.25rem;
-    }
-    .founder-bio {
-      font-size: 0.9375rem;
-      line-height: 1.75;
-      color: var(--ink-2);
-    }
-
-    /* WAITLIST */
-    #waitlist {
-      padding: 108px 0;
-      border-top: 1px solid var(--rule);
-    }
-    .waitlist-inner {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 5rem;
-      align-items: start;
-    }
-    .waitlist-title {
-      font-family: var(--ff-serif);
-      font-size: clamp(2rem, 3.5vw, 3rem);
-      font-weight: 600;
-      line-height: 1.08;
-      color: var(--ink);
-      margin-bottom: 1rem;
-    }
-    .waitlist-sub {
-      font-size: 1.0625rem;
-      line-height: 1.72;
-      color: var(--ink-2);
-      max-width: 420px;
-    }
-    .waitlist-email {
-      margin-top: 1.5rem;
-      font-size: 0.875rem;
-      color: var(--ink-3);
-    }
-    .waitlist-email a { color: var(--green); text-decoration: none; }
-    .form-field { margin-bottom: 0.875rem; }
-    .form-label {
-      display: block;
-      font-size: 0.8125rem;
-      font-weight: 600;
-      color: var(--ink);
-      margin-bottom: 0.4rem;
-    }
-    .form-input, .form-select {
-      width: 100%;
-      background: var(--white);
-      border: 1.5px solid var(--rule);
-      border-radius: 6px;
-      padding: 0.75rem 1rem;
-      color: var(--ink);
-      font-family: var(--ff-sans);
-      font-size: 0.9375rem;
-      outline: none;
-      transition: border-color 0.2s;
-      appearance: none;
-    }
-    .form-input:focus, .form-select:focus { border-color: var(--green); }
-    .form-input::placeholder { color: var(--ink-3); }
-    .form-select { cursor: pointer; }
-    .form-select option { background: var(--white); }
-    .btn-submit {
-      width: 100%;
-      margin-top: 0.5rem;
-      padding: 0.9375rem;
-      font-size: 1rem;
-    }
-    .form-note {
-      font-size: 0.8125rem;
-      color: var(--ink-3);
-      margin-top: 0.875rem;
-      line-height: 1.5;
-    }
-    #form-success {
-      display: none;
-      padding: 2.5rem 2rem;
-      background: var(--green-tint);
-      border-radius: 8px;
-      text-align: center;
-    }
-    #form-success h3 {
-      font-family: var(--ff-serif);
-      font-size: 1.6rem;
-      font-weight: 600;
-      color: var(--green);
-      margin-bottom: 0.5rem;
-    }
-    #form-success p {
-      font-size: 0.9375rem;
-      color: var(--ink-2);
-      line-height: 1.65;
-    }
-
-    /* FOOTER */
-    footer {
-      border-top: 1px solid var(--rule);
-      padding: 2.5rem 0;
-    }
-    .footer-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1.25rem;
-    }
-    .footer-logo {
-      font-family: var(--ff-serif);
-      font-size: 1.1rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      color: var(--green);
-      text-decoration: none;
-    }
-    .footer-copy { font-size: 0.8125rem; color: var(--ink-3); }
-    .footer-links { display: flex; gap: 1.5rem; }
-    .footer-links a {
-      font-size: 0.8125rem;
-      color: var(--ink-3);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .footer-links a:hover { color: var(--ink); }
-
-    /* REVEAL */
-    .reveal {
-      opacity: 0;
-      transform: translateY(14px);
-      transition: opacity 0.65s ease, transform 0.65s ease;
-    }
-    .reveal.visible { opacity: 1; transform: none; }
-    .reveal-d1 { transition-delay: 0.1s; }
-    .reveal-d2 { transition-delay: 0.2s; }
-    .reveal-d3 { transition-delay: 0.3s; }
-
-    /* MOBILE NAV */
-    .nav-toggle {
-      display: none;
-      flex-direction: column;
-      justify-content: space-between;
-      width: 22px;
-      height: 14px;
-      background: none;
-      border: none;
-      padding: 0;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-    .nav-toggle-bar {
-      display: block;
-      width: 100%;
-      height: 1.5px;
-      background: var(--ink);
-      transition: transform 0.22s ease, opacity 0.22s ease;
-    }
-    .nav-toggle.active .nav-toggle-bar:first-child {
-      transform: translateY(6.25px) rotate(45deg);
-    }
-    .nav-toggle.active .nav-toggle-bar:last-child {
-      transform: translateY(-6.25px) rotate(-45deg);
-    }
-    .nav-mobile {
-      position: fixed;
-      top: 68px; left: 0; right: 0;
-      background: rgba(248, 247, 243, 0.97);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--rule);
-      padding: 0 var(--pad) 2rem;
-      display: flex;
-      flex-direction: column;
-      z-index: 99;
-      transform: translateY(-6px);
-      opacity: 0;
-      pointer-events: none;
-      transition: transform 0.22s ease, opacity 0.22s ease;
-    }
-    .nav-mobile.open {
-      transform: none;
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .nav-mobile a {
-      font-family: var(--ff-sans);
-      font-size: 1rem;
-      font-weight: 500;
-      color: var(--ink-2);
-      text-decoration: none;
-      padding: 1rem 0;
-      border-bottom: 1px solid var(--rule);
-      transition: color 0.2s;
-    }
-    .nav-mobile a:hover { color: var(--ink); }
-    .nav-mobile .btn-sm {
-      margin-top: 1.5rem;
-      width: fit-content;
-      border-bottom: none;
-      padding-top: 0;
-    }
-
-    /* RESPONSIVE */
-    @media (max-width: 900px) {
-      .nav-links { display: none; }
-      .nav-desktop-cta { display: none; }
-      .nav-toggle { display: flex; }
-      .failures { grid-template-columns: 1fr; }
-      .failure-item + .failure-item { border-left: none; border-top: 1px solid var(--rule); }
-      .dimension-row { grid-template-columns: 1fr; }
-      .dim-label { border-right: none; border-bottom: 1px solid var(--rule); }
-      .roadmap-phases { grid-template-columns: 1fr; }
-      .phase + .phase { border-left: none; border-top: 1px solid var(--rule); }
-      .waitlist-inner { grid-template-columns: 1fr; gap: 3rem; }
-      .founder-block { grid-template-columns: 1fr; gap: 2rem; }
-    }
-    @media (max-width: 640px) {
-      .hero-actions { flex-direction: column; align-items: center; gap: 1rem; }
-      .section { padding: 72px 0; }
-      #waitlist { padding: 72px 0; }
-      .persona-row { grid-template-columns: 1fr; gap: 0.5rem; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .reveal { opacity: 1; transform: none; transition: none; }
-      html { scroll-behavior: auto; }
-    }
-  </style>
+  <link rel="stylesheet" href="assets/css/main.css" />
 </head>
 <body>
 
-<!-- NAV -->
 <header id="nav">
   <div class="container nav-inner">
-    <a href="#" class="logo">VITARA</a>
+    <a href="/" class="logo">VITARA</a>
     <nav class="nav-links" aria-label="Site navigation">
-      <a href="#problem">Problem</a>
-      <a href="#approach">Approach</a>
-      <a href="#who">Who It's For</a>
-      <a href="#founder">Founder</a>
+      <a href="/product/" class="nav-link">Product</a>
+      <a href="/how-it-works/" class="nav-link">How It Works</a>
+      <a href="/docs/" class="nav-link">Docs</a>
+      <a href="/about/" class="nav-link">About</a>
     </nav>
     <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
       <span class="nav-toggle-bar"></span>
@@ -768,126 +34,138 @@
     <a href="#waitlist" class="btn btn-sm nav-desktop-cta">Join waitlist</a>
   </div>
 </header>
-<div id="nav-mobile" class="nav-mobile" role="navigation" aria-label="Mobile navigation">
-  <a href="#problem">Problem</a>
-  <a href="#approach">Approach</a>
-  <a href="#who">Who It&rsquo;s For</a>
-  <a href="#founder">Founder</a>
+<div id="nav-mobile" class="nav-mobile">
+  <a href="/product/">Product</a>
+  <a href="/how-it-works/">How It Works</a>
+  <a href="/docs/">Docs</a>
+  <a href="/about/">About</a>
   <a href="#waitlist" class="btn btn-sm">Join waitlist</a>
 </div>
 
 <!-- HERO -->
 <section id="hero">
-  <div class="container hero-inner">
+  <div class="hero-inner container">
     <p class="eyebrow reveal">Adaptive health coaching</p>
-    <h1 class="hero-title reveal reveal-d1">Health plans built<br>for your life.</h1>
-    <p class="hero-sub reveal reveal-d2">VITARA generates diet, exercise, and wellness plans calibrated to your cultural background, your location, and how your body naturally works. Not a template. Not an average.</p>
-    <div class="hero-actions reveal reveal-d3">
-      <a href="#waitlist" class="btn btn-primary">Join early access</a>
-      <a href="#approach" class="btn btn-ghost">See the approach &rarr;</a>
+    <h1 class="hero-title reveal">Health plans built<br><em>for you.</em><br>Not for the average.</h1>
+    <p class="hero-sub reveal">VITARA adapts your meal and exercise plan to your food culture, where you live, and how your body naturally works — because generic plans don't work for most of the world.</p>
+    <div class="hero-actions reveal">
+      <a href="#waitlist" class="btn btn-primary">Join the waitlist</a>
+      <a href="/product/" class="btn btn-ghost">Learn how it works →</a>
     </div>
     <div class="hero-rule reveal"></div>
   </div>
 </section>
 
-<!-- PROBLEM -->
-<section id="problem" class="section">
+<!-- PROBLEM TEASER -->
+<section class="section" id="problem">
   <div class="container">
-    <p class="section-label reveal">The Problem</p>
-    <h2 class="section-title reveal reveal-d1">The plan assumed<br>you were<br>someone else.</h2>
-    <p class="section-body reveal reveal-d1">Every major health app generates the same recommendations for everyone. Grilled chicken. Quinoa. A 6&nbsp;AM workout. For 80% of the world's smartphone users, that plan is technically feasible and practically useless — because it was designed for someone whose food, location, and body clock looks nothing like theirs.</p>
-    <p class="section-body reveal reveal-d2">Rahul is 28. Software engineer. South Asian, lives in DC. He wears an Apple Watch. His family history means he has real reasons to take metabolic health seriously. But the meal plan his app gives him is full of food he doesn't cook, at times he doesn't eat, for a schedule he doesn't keep. It's not wrong. It's just not his.</p>
-    <blockquote class="pullquote reveal reveal-d3">"This is a structural failure, not a feature gap."</blockquote>
-    <p class="section-body reveal">Every major platform optimizes for the median user and ignores three variables that actually determine whether someone follows a plan: who they are, where they live, and how their body works.</p>
-    <div class="failures reveal">
-      <div class="failure-item">
-        <p class="failure-title">Cultural defaults</p>
-        <p class="failure-body">Meal recommendations are built around Western dietary patterns. Dal, jollof rice, roti, tortillas — real food for the majority of the world — don't exist in these systems. The plan asks you to eat like someone you're not.</p>
+    <div class="section-split">
+      <div>
+        <p class="section-label">The problem</p>
+        <h2 class="section-title-lg reveal">Generic apps were built<br>for someone else.</h2>
       </div>
-      <div class="failure-item">
+      <div>
+        <p class="section-body reveal">Rahul is 28. Software engineer. Born in India, lives in Washington DC. He wears an Apple Watch. His app tells him he's doing fine. His dad got Type 2 diabetes at 47. His uncle at 52. Rahul knows the risk is there — he just can't get any health app to acknowledge it.</p>
+        <p class="section-body reveal" style="margin-top:1.25rem;">The meal plan the app gives him is full of food he doesn't eat. The workout schedule assumes he sleeps at 10 PM and wakes at 6 AM. The nutrition advice was written for someone else.</p>
+        <p class="pullquote reveal" style="margin-top:2rem;">"Rahul is not an edge case. He is the majority of the world's health app users."</p>
+      </div>
+    </div>
+
+    <div class="failures" style="margin-top:3.5rem;">
+      <div class="failure-item reveal">
+        <p class="failure-title">Western defaults</p>
+        <p class="failure-body">Dal, jollof rice, sabzi, tortillas — they don't exist in mainstream app databases. You either can't find your food or get wildly inaccurate macros.</p>
+      </div>
+      <div class="failure-item reveal">
         <p class="failure-title">Location blindness</p>
-        <p class="failure-body">A user in Lagos and a user in London receive identical recommendations. Climate, food availability, and practical context are invisible. Every plan assumes a Whole Foods around the corner and year-round running weather.</p>
+        <p class="failure-body">The same plan for Chennai, Chicago, and Cape Town. Local climate, food availability, and practical exercise options are invisible to every major app.</p>
       </div>
-      <div class="failure-item">
+      <div class="failure-item reveal">
         <p class="failure-title">The 6 AM assumption</p>
-        <p class="failure-body">Health apps schedule meals and workouts for a standard body clock that most people don't have. If you're a late riser, a shift worker, or your energy peaks in the evening, the plan starts failing from day one.</p>
+        <p class="failure-body">Every plan assumes you wake at 6 and sleep at 10. Night workers, late chronotypes, Ramadan observers, and shift workers don't exist in the model.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- APPROACH -->
-<section id="approach" class="section">
+<!-- APPROACH TEASER -->
+<section class="section" id="approach">
   <div class="container">
-    <p class="section-label reveal">The Approach</p>
-    <h2 class="section-title reveal reveal-d1">Adaptation isn't<br>a feature.<br>It's the premise.</h2>
-    <p class="section-body reveal reveal-d2">VITARA is built around three variables that generic apps ignore. Together, they determine not just whether a plan is nutritionally sound — but whether someone will actually follow it.</p>
-    <div class="dimensions reveal">
-      <div class="dimension-row">
-        <div class="dim-label">
-          <p class="dim-num">01</p>
-          <p class="dim-name">Cultural food<br>intelligence</p>
-        </div>
-        <div class="dim-body">Your ethnicity and food culture shape which foods are realistic, which nutritional norms apply, and which health risks are relevant. VITARA builds meal plans around the food you actually eat — not a Western substitute that treats your kitchen as an obstacle.</div>
+    <div class="section-split">
+      <div>
+        <p class="section-label">The approach</p>
+        <h2 class="section-title-lg reveal">Three dimensions.<br>One adaptive plan.</h2>
+        <a href="/product/" class="btn btn-outline reveal" style="margin-top:2rem;">Explore the product →</a>
       </div>
-      <div class="dimension-row">
-        <div class="dim-label">
-          <p class="dim-num">02</p>
-          <p class="dim-name">Location and<br>environment</p>
+      <div>
+        <div class="dimensions">
+          <div class="dimension-row reveal">
+            <div class="dim-label">
+              <p class="dim-num">01</p>
+              <p class="dim-name">Cultural Intelligence</p>
+            </div>
+            <div class="dim-body">Your meal plan is built around food you actually eat — made healthy, not replaced. South Asian, West African, Middle Eastern, Latin American. Your culture. Your kitchen.</div>
+          </div>
+          <div class="dimension-row reveal">
+            <div class="dim-label">
+              <p class="dim-num">02</p>
+              <p class="dim-name">Location Awareness</p>
+            </div>
+            <div class="dim-body">A user in Lagos and a user in London don't have the same food availability, the same weather, or the same exercise options. VITARA plans for where you actually live.</div>
+          </div>
+          <div class="dimension-row reveal">
+            <div class="dim-label">
+              <p class="dim-num">03</p>
+              <p class="dim-name">Body Rhythm</p>
+            </div>
+            <div class="dim-body">VITARA schedules meals, workouts, and recovery around how you actually function — your natural energy peaks, your real sleep patterns, your actual daily window.</div>
+          </div>
         </div>
-        <div class="dim-body">Where you live affects what food is accessible, what exercise is practical, and what your body needs seasonally. VITARA uses your location to produce plans that work in your actual world — not an idealized default environment with optimal infrastructure.</div>
-      </div>
-      <div class="dimension-row">
-        <div class="dim-label">
-          <p class="dim-num">03</p>
-          <p class="dim-name">Body rhythm<br>alignment</p>
-        </div>
-        <div class="dim-body">People have different natural energy cycles — when they wake, when they peak, when they wind down. VITARA schedules nutrition and exercise around how your body actually functions, not the 6 AM template every other platform defaults to.</div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- COMPARISON -->
-<section id="comparison" class="section">
+<section class="section" id="comparison">
   <div class="container">
-    <p class="section-label reveal">The Difference</p>
-    <h2 class="section-title section-title-wide reveal reveal-d1">Same person. Two very different results.</h2>
-    <p class="compare-context reveal reveal-d2">South Asian, 28, Washington DC — family history of metabolic disease, natural energy peak at 11 AM.</p>
+    <p class="section-label">Side by side</p>
+    <h2 class="section-title-lg reveal">What you get vs.<br>what you used to get.</h2>
+    <p class="compare-context reveal">For a South Asian user in Washington DC. Real outputs from real inputs.</p>
     <div class="table-scroll reveal">
       <table class="compare-table">
         <thead>
           <tr>
-            <th></th>
-            <th>Typical Health App</th>
+            <th>Category</th>
+            <th>Generic App</th>
             <th class="th-vitara">VITARA</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td class="td-cat">Meal plan</td>
-            <td>Grilled chicken, quinoa, steamed broccoli — repeated five days. Nothing from his actual kitchen.</td>
-            <td class="td-vitara">Dal tadka, brown rice, sabzi, roti — macro-balanced, portioned correctly, built around his food culture.</td>
+            <td>Grilled chicken, quinoa, steamed broccoli — repeated 5 days</td>
+            <td class="td-vitara">Dal tadka with brown rice, sabzi, roti — macro-balanced, portion-right</td>
           </tr>
           <tr>
             <td class="td-cat">Exercise</td>
-            <td>"30-minute run" — every day, same time, regardless of weather or schedule.</td>
-            <td class="td-vitara">Indoor yoga and strength work adjusted for DC winter, timed to his natural 11 AM energy peak.</td>
+            <td>"Go for a 30-min run" (every day, same time)</td>
+            <td class="td-vitara">Indoor yoga flow + evening walk — adapted for schedule and local weather</td>
           </tr>
           <tr>
-            <td class="td-cat">Daily timing</td>
-            <td>Wake 6:30 AM, eat at 7, work out at 7:30. Built for someone else's life.</td>
-            <td class="td-vitara">8 AM wake, performance window at 11 AM, wind-down nutrition at 10 PM. His actual schedule.</td>
+            <td class="td-cat">Schedule</td>
+            <td>Wake 6:30 AM, eat at 7, work out at 7:30</td>
+            <td class="td-vitara">Matches your natural 8 AM wake, peak energy at 11 AM, wind-down at 11 PM</td>
           </tr>
           <tr>
             <td class="td-cat">Location</td>
-            <td>Ignored. Identical plan to a user in Chennai, Cape Town, or Calgary.</td>
-            <td class="td-vitara">DC food availability and seasonality inform every recommendation. Local and practical.</td>
+            <td>Ignored entirely</td>
+            <td class="td-vitara">DC weather and local food availability inform every recommendation</td>
           </tr>
           <tr>
-            <td class="td-cat">Health context</td>
-            <td>Treats him as a median user. No acknowledgment of elevated metabolic risk.</td>
-            <td class="td-vitara">South Asian metabolic risk patterns shape nutritional guidance from day one.</td>
+            <td class="td-cat">Cultural food</td>
+            <td>Not in the database</td>
+            <td class="td-vitara">Every recommendation reflects South Asian dietary patterns</td>
           </tr>
         </tbody>
       </table>
@@ -895,71 +173,79 @@
   </div>
 </section>
 
-<!-- WHO -->
-<section id="who" class="section">
+<!-- WHO IT'S FOR -->
+<section class="section" id="who">
   <div class="container">
-    <p class="section-label reveal">Who It's For</p>
-    <h2 class="section-title reveal reveal-d1">Starting narrow.<br>Building wide.</h2>
-    <p class="section-body reveal reveal-d2">VITARA is entering through one of the most underserved segments in health technology: South Asian diaspora users in the US and UK — an estimated four million health-aware individuals whose food, bodies, and lifestyle rhythms are systematically absent from mainstream app databases. Not because VITARA is a South Asian product, but because this community represents the clearest, most documentable version of a universal problem.</p>
-    <p class="section-body reveal">The adaptive engine we're validating here — cultural food intelligence, location context, body rhythm alignment — works for any culture, any community, any latitude. Once the model is proven with one beachhead, the same platform scales to West African, Middle Eastern, Latino, and East Asian communities using the same adaptive infrastructure.</p>
-    <div class="personas reveal">
-      <div class="persona-row">
-        <div class="persona-name-block">
-          <p class="persona-name">Rahul, 28</p>
-          <p class="persona-meta">DC &middot; South Asian</p>
-        </div>
-        <p class="persona-desc">Software engineer, Apple Watch user, family history of Type 2 diabetes. His app says he's fine. The meal plan is full of food he doesn't eat and a schedule that assumes a life he doesn't live.</p>
+    <div class="section-split">
+      <div>
+        <p class="section-label">Who it's for</p>
+        <h2 class="section-title-lg reveal">Built for the world<br>the other apps<br>forgot.</h2>
+        <p class="section-body reveal" style="margin-top:1.5rem;">We're starting with South Asian diaspora users in the US and UK — 3+ million health-aware individuals whose food, bodies, and lifestyles are entirely absent from mainstream health app databases.</p>
+        <p class="section-body reveal">Not because VITARA is a South Asian app. Because this community has the clearest gap between what existing apps provide and what actually works.</p>
       </div>
-      <div class="persona-row">
-        <div class="persona-name-block">
-          <p class="persona-name">Amara, 31</p>
-          <p class="persona-meta">London &middot; Nigerian-British</p>
+      <div>
+        <div class="personas">
+          <div class="persona-row reveal">
+            <div>
+              <p class="persona-name">Rahul</p>
+              <p class="persona-meta">28 · DC · Software engineer</p>
+            </div>
+            <p class="persona-desc">"My app says I'm healthy. I know I'm not. Family history of diabetes, and not one recommendation that knows what I eat."</p>
+          </div>
+          <div class="persona-row reveal">
+            <div>
+              <p class="persona-name">Amara</p>
+              <p class="persona-meta">31 · London · NHS nurse</p>
+            </div>
+            <p class="persona-desc">Gym 3× a week. Every meal plan she tries is full of food she doesn't eat. West African home cooking is invisible to every app she's tried.</p>
+          </div>
+          <div class="persona-row reveal">
+            <div>
+              <p class="persona-name">Diego</p>
+              <p class="persona-meta">26 · Houston · Night shift supervisor</p>
+            </div>
+            <p class="persona-desc">Night owl who works late. Every health app assumes he's asleep by 10 — when that's actually when he starts to peak.</p>
+          </div>
+          <div class="persona-row reveal">
+            <div>
+              <p class="persona-name">Fatima</p>
+              <p class="persona-meta">29 · Birmingham · Teacher</p>
+            </div>
+            <p class="persona-desc">Observes Ramadan. No app has ever given her a plan that makes sense for her fasting schedule, let alone her PCOS diagnosis.</p>
+          </div>
         </div>
-        <p class="persona-desc">Works out three times a week. Every nutrition plan she tries is built around food she's never cooked and doesn't want to start cooking now. The gap between what apps recommend and what she eats is absolute.</p>
-      </div>
-      <div class="persona-row">
-        <div class="persona-name-block">
-          <p class="persona-name">Diego, 26</p>
-          <p class="persona-meta">Houston &middot; Mexican-American</p>
-        </div>
-        <p class="persona-desc">Works late, natural night owl. Every health app assumes he's asleep by 10 PM and ready for a morning run. He's just getting started at 10. The schedule designed for someone else fails him every time.</p>
-      </div>
-      <div class="persona-row">
-        <div class="persona-name-block">
-          <p class="persona-name">Fatima, 29</p>
-          <p class="persona-meta">Birmingham &middot; British-Pakistani</p>
-        </div>
-        <p class="persona-desc">Observes Ramadan. Health-conscious, motivated, and completely failed by apps that have no concept of her fasting schedule, her dietary context, or what health actually means in her life.</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- WHY NOW -->
-<section id="why-now" class="section">
-  <div class="container">
-    <p class="section-label reveal">Why Now</p>
-    <h2 class="section-title section-title-wide reveal reveal-d1">Three forces.<br>One window.</h2>
-    <div class="reasons reveal reveal-d2">
-      <div class="reason">
-        <div class="reason-num">1</div>
+<section class="section" id="why-now">
+  <div class="container section-split">
+    <div>
+      <p class="section-label">Why now</p>
+      <h2 class="section-title-lg reveal">Three forces<br>converging.</h2>
+    </div>
+    <div class="reasons">
+      <div class="reason reveal">
+        <span class="reason-num">1</span>
         <div>
-          <h3>Language models made this possible</h3>
-          <p>Culturally aware, contextually intelligent coaching at consumer scale required capabilities that didn't exist three years ago. The infrastructure now does. The window to build this is open — and it won't stay open indefinitely.</p>
+          <h3>LLMs make culturally intelligent coaching possible at scale</h3>
+          <p>Generating a meal plan in Tamil Nadu requires different knowledge than one in Toronto. Large language models finally make context-aware coaching feasible without a human nutritionist for every user.</p>
         </div>
       </div>
-      <div class="reason">
-        <div class="reason-num">2</div>
+      <div class="reason reveal">
+        <span class="reason-num">2</span>
         <div>
-          <h3>The gap is widening, not closing</h3>
-          <p>Health apps are not becoming more culturally diverse. The user base has diversified far faster than the content. Every year the distance grows between what apps offer and what users actually need. Generic platforms have no incentive to course-correct.</p>
+          <h3>The cultural gap is widening, not closing</h3>
+          <p>Smartphone adoption is global. Health app content is not. The majority of new users entering the health-tech market do not fit the Western dietary template apps were built around.</p>
         </div>
       </div>
-      <div class="reason">
-        <div class="reason-num">3</div>
+      <div class="reason reveal">
+        <span class="reason-num">3</span>
         <div>
-          <h3>Urgency, not preference</h3>
-          <p>For communities with strong family histories of chronic disease — particularly South Asian diaspora users with elevated metabolic risk — culturally relevant health guidance is not a quality-of-life upgrade. For many, it is a genuine health necessity.</p>
+          <h3>Metabolic risk creates genuine urgency</h3>
+          <p>South Asian, West African, and Latino communities carry disproportionate metabolic risk — and disproportionately unhelpful tooling. The urgency is real and the gap is measurable.</p>
         </div>
       </div>
     </div>
@@ -967,43 +253,42 @@
 </section>
 
 <!-- ROADMAP -->
-<section id="roadmap" class="section">
+<section class="section" id="roadmap">
   <div class="container">
-    <p class="section-label reveal">How We're Building This</p>
-    <h2 class="section-title section-title-wide reveal reveal-d1">Discovery first.<br>Product second.</h2>
-    <p class="section-body reveal reveal-d2">We are running 25 customer discovery interviews before writing a line of app code. This is a deliberate choice — not a pre-launch constraint. The product will be shaped by what we learn from real users, not by assumptions about what they need.</p>
-    <div class="roadmap-phases reveal">
-      <div class="phase">
-        <span class="phase-badge badge-active">Now</span>
-        <h3>Discovery</h3>
-        <p>25 interviews across three user segments. Manual 8-week cohort program with 10 participants. Validating the core differentiator before building anything.</p>
-        <ul>
-          <li>Customer discovery interviews</li>
-          <li>Manual cohort coaching program</li>
-          <li>Beachhead segment validation</li>
-          <li>Core differentiator prioritized by data</li>
+    <p class="section-label">Where we're going</p>
+    <h2 class="section-title-lg section-title-lg wide reveal">One differentiator. Every community.</h2>
+    <div class="roadmap-phases">
+      <div class="phase phase-active reveal">
+        <p class="phase-num">Phase 1 — Now</p>
+        <p class="phase-name">Manual Validation</p>
+        <ul class="phase-items">
+          <li>Cultural food intelligence</li>
+          <li>Location-aware planning</li>
+          <li>Body rhythm alignment</li>
+          <li>10-person WhatsApp cohort</li>
+          <li>25 discovery interviews</li>
         </ul>
       </div>
-      <div class="phase">
-        <span class="phase-badge badge-next">Next</span>
-        <h3>Beachhead Product</h3>
-        <p>Lightweight digital product. Cultural food intelligence, location context, body rhythm alignment. 500 paying users, above-average retention.</p>
-        <ul>
-          <li>Adaptive onboarding flow</li>
-          <li>Plan generation engine</li>
-          <li>Subscription launch ($12–15/month)</li>
+      <div class="phase reveal">
+        <p class="phase-num">Phase 2 — Launch</p>
+        <p class="phase-name">Beachhead Product</p>
+        <ul class="phase-items">
+          <li>Mobile app (iOS + Android)</li>
+          <li>500 paying users</li>
+          <li>Subscription model validated</li>
+          <li>Retention above industry avg</li>
           <li>Community-first growth</li>
         </ul>
       </div>
-      <div class="phase">
-        <span class="phase-badge badge-next">Later</span>
-        <h3>Platform Expansion</h3>
-        <p>Same adaptive engine applied to West African, Latino, and Middle Eastern communities. Wearable integration. Corporate wellness for diverse employers.</p>
-        <ul>
-          <li>Multi-segment cultural expansion</li>
+      <div class="phase reveal">
+        <p class="phase-num">Phase 3 — Expand</p>
+        <p class="phase-name">Global Platform</p>
+        <ul class="phase-items">
+          <li>West African, Latino, Middle Eastern communities</li>
           <li>Wearable data integration</li>
-          <li>B2B corporate wellness</li>
-          <li>Global adaptive health platform</li>
+          <li>Corporate wellness (B2B)</li>
+          <li>Lab result interpretation</li>
+          <li>Full adaptive engine</li>
         </ul>
       </div>
     </div>
@@ -1011,135 +296,76 @@
 </section>
 
 <!-- FOUNDER -->
-<section id="founder" class="section">
-  <div class="container">
-    <p class="section-label reveal">The Founder</p>
-    <div class="founder-block reveal reveal-d1">
-      <div>
-        <p class="founder-name">Akshay Kumar</p>
-        <p class="founder-role">Founder, VITARA<br>MBA Candidate<br>Kogod School of Business<br>American University</p>
-        <div class="founder-rule"></div>
-      </div>
-      <div>
-        <p class="founder-quote">"I tried every health app I could find. Every plan assumed I was someone else. VITARA is the product I built because nothing like it existed."</p>
-        <p class="founder-bio">Technical and product background. South Asian, with personal experience of the exact problem VITARA solves. VITARA was first presented at ITEC-617 at American University, where a judge handed over a contact card after the pitch. The next step is not a launch — it's 25 conversations with the people who need this most. Customer discovery before product, because the evidence demands it.</p>
-      </div>
+<section class="section" id="founder">
+  <div class="container section-split section-split-center">
+    <div>
+      <p class="section-label">Founder</p>
+      <h2 class="section-title-lg reveal">Akshay Kumar</h2>
+      <p class="section-body reveal">MBA student at American University (Kogod School of Business). Technical and product background. South Asian — personally understands the problem VITARA solves.</p>
+      <p class="section-body reveal" style="margin-top:1rem;">Doing customer discovery before building, because the professor and the market both said to. <a href="/about/" style="color:var(--green);font-weight:600;">Read the full story →</a></p>
+    </div>
+    <div>
+      <p class="pullquote reveal" style="margin:0;">"Every health app I tried gave me plans written for someone else. VITARA is the app I wish existed."</p>
     </div>
   </div>
 </section>
 
 <!-- WAITLIST -->
-<section id="waitlist">
+<section class="section" id="waitlist">
   <div class="container">
-    <div class="waitlist-inner">
-      <div>
-        <p class="section-label">Early Access</p>
-        <h2 class="waitlist-title">Be among<br>the first.</h2>
-        <p class="waitlist-sub">VITARA is in early access. Join the waitlist — tell us your background and where you live, and we'll design the pilot program around real users. No app yet. Just a real conversation about what health coaching should look like for you.</p>
-        <p class="waitlist-email">Or email us: <a href="mailto:hello@vitara.health">hello@vitara.health</a></p>
-      </div>
-      <div>
-        <div id="form-content">
-          <div class="form-field">
-            <label class="form-label" for="f-name">Your name</label>
-            <input class="form-input" type="text" id="f-name" placeholder="Full name" autocomplete="name" />
-          </div>
-          <div class="form-field">
-            <label class="form-label" for="f-email">Email address</label>
-            <input class="form-input" type="email" id="f-email" placeholder="you@example.com" autocomplete="email" />
-          </div>
-          <div class="form-field">
-            <label class="form-label" for="f-culture">Your food culture / background</label>
-            <select class="form-select" id="f-culture">
-              <option value="" disabled selected>Select your background</option>
-              <option value="south-asian">South Asian (Indian, Pakistani, Bangladeshi, Sri Lankan)</option>
-              <option value="west-african">West African (Nigerian, Ghanaian, Senegalese…)</option>
-              <option value="middle-eastern">Middle Eastern (Lebanese, Egyptian, Turkish, Iranian…)</option>
-              <option value="latino">Latino / Latin American</option>
-              <option value="east-asian">East Asian (Chinese, Japanese, Korean…)</option>
-              <option value="southeast-asian">Southeast Asian</option>
-              <option value="other">Other / Mixed background</option>
-            </select>
-          </div>
-          <div class="form-field">
-            <label class="form-label" for="f-location">Where do you live?</label>
-            <select class="form-select" id="f-location">
-              <option value="" disabled selected>Select your country</option>
-              <option value="us">United States</option>
-              <option value="uk">United Kingdom</option>
-              <option value="canada">Canada</option>
-              <option value="australia">Australia</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-          <button class="btn btn-primary btn-submit" onclick="submitForm()">Join the waitlist</button>
-          <p class="form-note">No spam. We'll only contact you when the pilot program is ready — and it will be designed around your background.</p>
+    <div style="max-width:620px;">
+      <p class="section-label">Early access</p>
+      <h2 class="section-title-lg reveal">Be among the first.</h2>
+      <p class="section-body reveal">VITARA is in early access. Join the waitlist and tell us your food culture — we'll design the pilot program around real users like you.</p>
+
+      <form class="waitlist-form reveal" id="waitlist-form" style="margin-top:2rem;" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="wl-name">Your name</label>
+          <input class="form-input" type="text" id="wl-name" name="name" placeholder="Rahul Mehta" autocomplete="given-name" />
         </div>
-        <div id="form-success">
-          <h3>You're on the list.</h3>
-          <p>We'll be in touch when the pilot launches. It will be designed with your food culture in mind.</p>
+        <div class="form-group">
+          <label class="form-label" for="wl-email">Email address <span style="color:var(--green)">*</span></label>
+          <input class="form-input" type="email" id="wl-email" name="email" placeholder="you@example.com" required autocomplete="email" />
         </div>
-      </div>
+        <div class="form-group">
+          <label class="form-label" for="wl-culture">Your food culture</label>
+          <select class="form-select" id="wl-culture" name="culture">
+            <option value="" disabled selected>Select your primary food culture</option>
+            <option>South Asian (Indian, Pakistani, Bangladeshi, Sri Lankan)</option>
+            <option>West African (Nigerian, Ghanaian, Senegalese…)</option>
+            <option>Middle Eastern (Arabic, Persian, Turkish…)</option>
+            <option>Latin American (Mexican, Colombian, Brazilian…)</option>
+            <option>East Asian (Chinese, Japanese, Korean…)</option>
+            <option>Southeast Asian (Filipino, Thai, Vietnamese…)</option>
+            <option>East African (Ethiopian, Somali, Kenyan…)</option>
+            <option>Other / Mixed</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top:0.5rem;">Join the waitlist</button>
+      </form>
+
+      <p class="form-success" id="form-success" style="display:none;">
+        You're on the list. We'll be in touch — and we'll build the pilot around you. Welcome to VITARA.
+      </p>
+      <p style="margin-top:1.5rem;font-size:0.875rem;color:var(--ink-3);">Or email us directly: <a href="mailto:hello@vitara.health" style="color:var(--green);">hello@vitara.health</a></p>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer>
   <div class="container footer-inner">
-    <a href="#" class="footer-logo">VITARA</a>
-    <p class="footer-copy">&copy; 2026 VITARA. Adaptive health coaching.</p>
-    <nav class="footer-links" aria-label="Footer navigation">
-      <a href="#problem">Problem</a>
-      <a href="#approach">Approach</a>
-      <a href="#waitlist">Waitlist</a>
+    <a href="/" class="footer-logo">VITARA</a>
+    <div class="footer-links">
+      <a href="/product/">Product</a>
+      <a href="/how-it-works/">How It Works</a>
+      <a href="/docs/">Docs</a>
+      <a href="/about/">About</a>
       <a href="mailto:hello@vitara.health">Contact</a>
-    </nav>
+    </div>
+    <p class="footer-note">© 2026 VITARA. Pre-product stage.</p>
   </div>
 </footer>
 
-<script>
-  const nav = document.getElementById('nav');
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 20);
-  }, { passive: true });
-
-  const obs = new IntersectionObserver(
-    entries => entries.forEach(e => {
-      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
-    }),
-    { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
-  );
-  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-
-  const navToggle = document.getElementById('nav-toggle');
-  const navMobile = document.getElementById('nav-mobile');
-  navToggle.addEventListener('click', () => {
-    const isOpen = navMobile.classList.toggle('open');
-    navToggle.classList.toggle('active', isOpen);
-    navToggle.setAttribute('aria-expanded', String(isOpen));
-  });
-  navMobile.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => {
-      navMobile.classList.remove('open');
-      navToggle.classList.remove('active');
-      navToggle.setAttribute('aria-expanded', 'false');
-    });
-  });
-
-  function submitForm() {
-    const name = document.getElementById('f-name').value.trim();
-    const email = document.getElementById('f-email').value.trim();
-    const culture = document.getElementById('f-culture').value;
-    if (!name || !email || !culture) {
-      if (!name) document.getElementById('f-name').style.borderColor = '#C0392B';
-      if (!email) document.getElementById('f-email').style.borderColor = '#C0392B';
-      if (!culture) document.getElementById('f-culture').style.borderColor = '#C0392B';
-      return;
-    }
-    document.getElementById('form-content').style.display = 'none';
-    document.getElementById('form-success').style.display = 'block';
-  }
-</script>
+<script src="assets/js/main.js"></script>
 </body>
 </html>
