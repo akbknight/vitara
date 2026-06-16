@@ -138,6 +138,7 @@
         form.style.display = 'none';
         if (success) success.style.display = 'block';
         success && success.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        if (window.launchConfetti) window.launchConfetti();
       }, 700);
     });
   }
@@ -155,5 +156,69 @@
       }
     });
   });
+
+
+  // ─── Dark mode toggle ────────────────────────────────
+  const themeToggle = document.getElementById('theme-toggle');
+  const html = document.documentElement;
+  const saved = sessionStorage.getItem('vitara-theme');
+  if (saved) html.setAttribute('data-theme', saved);
+  else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    html.setAttribute('data-theme', 'dark');
+  }
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const next = html.getAttribute('data-theme') === 'dark' ? '' : 'dark';
+      html.setAttribute('data-theme', next);
+      sessionStorage.setItem('vitara-theme', next);
+    });
+  }
+
+  // ─── Scroll indicator fade ───────────────────────────
+  const scrollIndicator = document.getElementById('scroll-indicator');
+  if (scrollIndicator) {
+    const onScrollIndicator = () => {
+      scrollIndicator.classList.toggle('hidden', window.scrollY > 80);
+    };
+    window.addEventListener('scroll', onScrollIndicator, { passive: true });
+  }
+
+  // ─── Confetti on waitlist success ───────────────────
+  window.launchConfetti = function () {
+    const canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const pieces = Array.from({ length: 90 }, () => ({
+      x: Math.random() * canvas.width,
+      y: -10 - Math.random() * 40,
+      r: 4 + Math.random() * 5,
+      d: 2.5 + Math.random() * 2.5,
+      color: ['#1a5c3f','#c4932a','#4f9a9f','#e8e5df','#2a7a55'][Math.floor(Math.random() * 5)],
+      angle: Math.random() * Math.PI * 2,
+      spin: (Math.random() - 0.5) * 0.15,
+      tilt: Math.random() * 10 - 5,
+    }));
+    let frame = 0;
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pieces.forEach(p => {
+        ctx.beginPath();
+        ctx.ellipse(p.x, p.y, p.r, p.r * 0.4, p.angle, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+        p.y += p.d;
+        p.x += Math.sin(p.angle) * 0.8;
+        p.angle += p.spin;
+        if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; }
+      });
+      frame++;
+      if (frame < 180) requestAnimationFrame(draw);
+      else { canvas.remove(); }
+    };
+    draw();
+  };
 
 })();
