@@ -18,13 +18,18 @@
     if (heroEyebrow) {
       tl.from(heroEyebrow, { opacity: 0, y: 16, duration: 0.6, ease: 'expo.out' });
     }
+    // stagger 0.12s; .hero-line--em gets an extra implicit 0.05s via duration overlap
     tl.from(heroLines, {
       y: 64,
       opacity: 0,
       duration: 0.9,
-      stagger: 0.1,
+      stagger: 0.12,
       ease: 'expo.out',
     }, '-=0.3');
+    const emLine = document.querySelector('.hero-line--em');
+    if (emLine) {
+      tl.from(emLine, { opacity: 0, duration: 0.25, ease: 'expo.out' }, '-=0.7');
+    }
     if (heroSub) {
       tl.from(heroSub, { opacity: 0, y: 20, duration: 0.7, ease: 'expo.out' }, '-=0.5');
     }
@@ -46,6 +51,17 @@
       opacity: 0,
       y: 28,
       duration: 0.7,
+      ease: 'expo.out',
+    });
+  });
+
+  // ─── Pull quote reveal — translateX ─────────────────
+  gsap.utils.toArray('.pull-quote').forEach((el) => {
+    gsap.from(el, {
+      scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' },
+      x: 20,
+      opacity: 0,
+      duration: 0.8,
       ease: 'expo.out',
     });
   });
@@ -103,19 +119,63 @@
     });
   }
 
+  // ─── Timeline dot reveal (about page) ───────────────
+  document.querySelectorAll('.tl-dot').forEach((dot, i) => {
+    gsap.to(dot, {
+      scrollTrigger: { trigger: dot, start: 'top 88%', toggleActions: 'play none none none' },
+      scale: 1,
+      duration: 0.45,
+      ease: 'back.out(2.5)',
+      delay: i * 0.08,
+    });
+  });
+
+  // ─── Count-up numbers ────────────────────────────────
+  document.querySelectorAll('.count-up').forEach((el) => {
+    const target = +el.dataset.target;
+    const obj = { val: 0 };
+    gsap.to(obj, {
+      scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
+      val: target,
+      duration: 1.8,
+      ease: 'power2.out',
+      onUpdate: function () {
+        el.textContent = Math.round(obj.val).toLocaleString();
+      },
+    });
+  });
+
+  // ─── Section dividers — draw on scroll ──────────────
+  const dividers = document.querySelectorAll('.section-divider');
+  if (dividers.length) {
+    const obs = new IntersectionObserver(
+      (entries) => entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          obs.unobserve(e.target);
+        }
+      }),
+      { threshold: 0.1 }
+    );
+    dividers.forEach((d) => obs.observe(d));
+  }
+
   // ─── Persona parallax on scroll ─────────────────────
   const personaSection = document.getElementById('who');
   if (personaSection) {
-    gsap.to(personaSection.querySelector('.personas'), {
-      scrollTrigger: {
-        trigger: personaSection,
-        start: 'top bottom',
-        end: 'bottom top',
-        scrub: true,
-      },
-      y: -20,
-      ease: 'none',
-    });
+    const personaEl = personaSection.querySelector('.personas');
+    if (personaEl) {
+      gsap.to(personaEl, {
+        scrollTrigger: {
+          trigger: personaSection,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true,
+        },
+        y: -20,
+        ease: 'none',
+      });
+    }
   }
 
   // ─── Why Now watermark ───────────────────────────────
@@ -150,6 +210,28 @@
       y: -40,
       ease: 'none',
     });
+  }
+
+  // ─── Docs sidebar sliding indicator ─────────────────
+  const docsNav = document.querySelector('.docs-nav');
+  if (docsNav) {
+    const activeItem = docsNav.querySelector('.docs-nav-item.active');
+    if (activeItem) {
+      const pill = document.createElement('div');
+      pill.className = 'docs-sidebar-pill';
+      docsNav.style.position = 'relative';
+      docsNav.appendChild(pill);
+
+      const top = activeItem.offsetTop;
+      const height = activeItem.offsetHeight;
+      pill.style.top = top + 'px';
+      pill.style.height = height + 'px';
+
+      gsap.fromTo(pill,
+        { scaleX: 0, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 0.4, ease: 'power2.out', delay: 0.35 }
+      );
+    }
   }
 
 })();
