@@ -413,7 +413,7 @@ SET LOCAL app.current_user_id = '&lt;authenticated-user-uuid&gt;';
       <h2 class="section-title" id="privacy">Privacy Considerations</h2>
       <ul class="body-text">
         <li><strong>No third-party health data sharing.</strong> Health metrics, meals, coaching conversations, and profile data never leave VITARA's infrastructure. They are not sold, rented, or shared with advertisers, data brokers, insurance companies, employers, or government agencies.</li>
-        <li><strong>AI processing transparency.</strong> When user health data is sent to the Claude API, this must be disclosed in the privacy policy. Anthropic's API terms prohibit using API inputs to train models, but the privacy policy must state explicitly that health data is sent to a third-party AI provider for processing.</li>
+        <li><strong>AI processing transparency.</strong> When user health data is sent to the AI API, this must be disclosed in the privacy policy. The AI provider's API terms prohibit using API inputs to train models, but the privacy policy must state explicitly that health data is sent to a third-party AI provider for processing.</li>
         <li><strong>Full data export (right to portability).</strong> Users can request a complete export of all their data: profile, health metrics, meals, coaching sessions, and lab results. The export is generated as a JSON file and delivered via a signed S3 URL. Export requests are processed within 72 hours.</li>
         <li><strong>Right to deletion.</strong> Account deletion requests initiate a 30-day soft-delete period (data is not accessible but not yet purged). Hard deletion occurs on day 31: all PostgreSQL rows, S3 objects (food photos, lab results), and ChromaDB embeddings containing the user's ID are permanently deleted. A confirmation email is sent when deletion completes.</li>
         <li><strong>GDPR / CCPA applicability.</strong> VITARA serves users in the UK and EU (GDPR) and California (CCPA). We are a data controller. The privacy policy must include: lawful basis for processing (contract performance + legitimate interest), data subject rights (access, rectification, erasure, portability), data retention periods, and a DPA contact.</li>
@@ -465,7 +465,7 @@ SET LOCAL app.current_user_id = '&lt;authenticated-user-uuid&gt;';
         <div class="card">
           <strong class="body-text">AI &amp; Plans</strong>
           <ul class="body-text" style="margin:0;padding-left:1.1rem;">
-            <li>Claude API returns malformed JSON in plan generation — retry once with explicit JSON schema instruction; if fails again, return last cached plan with "updating" message</li>
+            <li>AI API returns malformed JSON in plan generation — retry once with explicit JSON schema instruction; if fails again, return last cached plan with "updating" message</li>
             <li>User's profile is empty (skipped onboarding) — block /ai/generate-plan with 400 ONBOARDING_REQUIRED</li>
             <li>Context window too large (user with 6 months of history) — implement sliding window: last 7 days of metrics + weekly aggregates beyond that</li>
             <li>User sets both vegetarian and "I eat chicken" preferences — detect contradiction in validation layer; ask user to clarify at profile edit</li>
@@ -502,7 +502,7 @@ SET LOCAL app.current_user_id = '&lt;authenticated-user-uuid&gt;';
           <tr><td>Database</td><td>medications column encrypted with pgcrypto; KMS key rotation policy set (annual)</td><td><span class="badge badge-future">Pending</span></td></tr>
           <tr><td>Storage</td><td>S3 bucket public access block enabled on all buckets</td><td><span class="badge badge-future">Pending</span></td></tr>
           <tr><td>Storage</td><td>S3 signed URL expiry tested: expired URL returns 403</td><td><span class="badge badge-future">Pending</span></td></tr>
-          <tr><td>AI</td><td>No raw PII (name, email, DOB) included in Claude API prompts; only anonymized health context</td><td><span class="badge badge-future">Pending</span></td></tr>
+          <tr><td>AI</td><td>No raw PII (name, email, DOB) included in AI API prompts; only anonymized health context</td><td><span class="badge badge-future">Pending</span></td></tr>
           <tr><td>AI</td><td>AI response sanitization: strip any user data that might appear in hallucinated outputs before returning to client</td><td><span class="badge badge-future">Pending</span></td></tr>
           <tr><td>Rate Limiting</td><td>WAF rules active on auth endpoints; tested with burst traffic simulation</td><td><span class="badge badge-future">Pending</span></td></tr>
           <tr><td>Privacy</td><td>Privacy policy reviewed by counsel; GDPR lawful basis documented</td><td><span class="badge badge-future">Pending</span></td></tr>
@@ -526,7 +526,7 @@ SET LOCAL app.current_user_id = '&lt;authenticated-user-uuid&gt;';
       <a href="../../how-it-works/">How It Works</a>
       <a href="../../docs/">Docs</a>
       <a href="../../about/">About</a>
-      <a href="mailto:hello@vitara.health">Contact</a>
+      <a href="../../about/">Contact</a>
     </nav>
   </div>
 </footer>

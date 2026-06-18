@@ -340,7 +340,7 @@
           <span class="badge badge-active">MUST</span>
           <span class="body-text">Ethnicity-Based Meal Plan Generator</span>
         </div>
-        <p class="body-text"><strong>Description:</strong> Given the user's ethnicities and dietary preferences, generate a 7-day meal plan using the Claude API with culturally appropriate foods. The South Asian food database is built first; expansion hooks are in place for other cuisines.</p>
+        <p class="body-text"><strong>Description:</strong> Given the user's ethnicities and dietary preferences, generate a 7-day meal plan using the AI API with culturally appropriate foods. The South Asian food database is built first; expansion hooks are in place for other cuisines.</p>
         <p class="body-text"><strong>Acceptance Criteria:</strong></p>
         <ul class="body-text">
           <li>Generated plan includes real dish names from the user's cuisine (e.g. "Poha with peanuts and curry leaves" not "grain dish with legumes")</li>
@@ -348,7 +348,7 @@
           <li>Dietary restrictions are enforced without exception (halal, vegetarian, allergens)</li>
           <li>Plan is stored in PostgreSQL and retrievable from GET /api/v1/nutrition/meal-plan</li>
           <li>Meal plan generation completes in under 30 seconds for 95% of requests</li>
-          <li>If generation fails (Claude API timeout), return the last cached plan + "Updating your plan" notice; never show a blank plan screen</li>
+          <li>If generation fails (AI API timeout), return the last cached plan + "Updating your plan" notice; never show a blank plan screen</li>
         </ul>
         <p class="body-text"><strong>Dependencies:</strong> PROFILE-001, AUTH-002</p>
       </div>
@@ -468,11 +468,11 @@
           <span class="badge badge-active">MUST</span>
           <span class="body-text">Chat Interface</span>
         </div>
-        <p class="body-text"><strong>Description:</strong> A real-time chat interface with the AI health coach. User messages are sent to the Claude API with a system prompt that includes the user's health context snapshot and the last 10 messages of conversation history. Responses stream to the UI.</p>
+        <p class="body-text"><strong>Description:</strong> A real-time chat interface with the AI health coach. User messages are sent to the AI API with a system prompt that includes the user's health context snapshot and the last 10 messages of conversation history. Responses stream to the UI.</p>
         <p class="body-text"><strong>Acceptance Criteria:</strong></p>
         <ul class="body-text">
           <li>Chat interface uses the coaching chat bubble components from the Frontend Spec</li>
-          <li>Streaming response: text appears character-by-character as Claude streams tokens; no jarring full-message pop-in</li>
+          <li>Streaming response: text appears character-by-character as the AI streams tokens; no jarring full-message pop-in</li>
           <li>Full conversation stored in coaching_sessions.messages JSONB after each exchange</li>
           <li>Health context snapshot injected at session start: includes current plan, last 7 days of key metrics, user goals, profile summary</li>
           <li>Free users see remaining message count ("2 of 3 messages today") with upgrade prompt when exhausted</li>
@@ -487,7 +487,7 @@
           <span class="badge badge-next">SHOULD</span>
           <span class="body-text">Voice Mode</span>
         </div>
-        <p class="body-text"><strong>Description:</strong> Allow users to speak to their AI coach using the device microphone. Speech is transcribed via speech_to_text, sent to the Claude API as text, and the response is read aloud via flutter_tts.</p>
+        <p class="body-text"><strong>Description:</strong> Allow users to speak to their AI coach using the device microphone. Speech is transcribed via speech_to_text, sent to the AI API as text, and the response is read aloud via flutter_tts.</p>
         <p class="body-text"><strong>Acceptance Criteria:</strong></p>
         <ul class="body-text">
           <li>Voice mode toggled from within the chat interface via a microphone button</li>
@@ -596,7 +596,7 @@
         <p class="body-text"><strong>Description:</strong> "I just ate two chapatis and a bowl of dal makhani" — user speaks a meal description; NLP parses it into individual food items and quantities; user confirms before logging.</p>
         <p class="body-text"><strong>Acceptance Criteria:</strong></p>
         <ul class="body-text">
-          <li>Speech recognized via <code>speech_to_text</code>; transcription sent to Claude API for food extraction as a structured task (not a coaching call)</li>
+          <li>Speech recognized via <code>speech_to_text</code>; transcription sent to AI API for food extraction as a structured task (not a coaching call)</li>
           <li>Extracted foods displayed as a list for confirmation before logging</li>
           <li>Handles common South Asian food names and quantity descriptions ("one katori", "two rotis")</li>
         </ul>
@@ -739,7 +739,7 @@
         <p class="body-text"><strong>Acceptance Criteria:</strong></p>
         <ul class="body-text">
           <li>E2E tests written with flutter_test + integration_test package</li>
-          <li>Test covers: registration, email verification (stubbed), 7-screen onboarding, plan generation (mocked Claude API response), plan review, coaching chat (mocked response)</li>
+          <li>Test covers: registration, email verification (stubbed), 7-screen onboarding, plan generation (mocked AI API response), plan review, coaching chat (mocked response)</li>
           <li>Tests run in GitHub Actions on every PR to main; PR cannot be merged if tests fail</li>
           <li>Backend API integration tests cover: auth flow, profile CRUD, health data sync deduplication, plan generation endpoint, subscription webhook processing</li>
         </ul>
@@ -758,7 +758,7 @@
           <li>App Store Connect: 6.5" iPhone screenshots, 12.9" iPad screenshots (if applicable), app description (250 words), privacy nutrition labels accurately reflecting all data collected</li>
           <li>Google Play Console: feature graphic, phone screenshots, full description, data safety form</li>
           <li>HealthKit usage description strings in Info.plist accurately describe each permission (App Review team reads these)</li>
-          <li>All third-party SDKs declared in App Store privacy labels (RevenueCat, Firebase, Sentry, Anthropic API)</li>
+          <li>All third-party SDKs declared in App Store privacy labels (RevenueCat, Firebase, Sentry, AI API)</li>
           <li>Pre-launch security checklist (from Security &amp; Access doc) 100% complete before submission</li>
         </ul>
         <p class="body-text"><strong>Dependencies:</strong> All MUST tickets across M1–M5, Pre-Launch Security Checklist complete</p>
@@ -786,7 +786,7 @@
 
       <div class="callout callout-tip">
         <strong>Prompt Engineering Before UI</strong><br />
-        Run these prompts directly in the Anthropic Workbench with 20 diverse user profiles before writing any Flutter code that displays plan output. If the prompts don't produce the "moment of recognition" for a vegetarian Gujarati in Washington DC, a night-shift nurse from Lagos in London, and a Mexican-American night owl in Houston — the UI is irrelevant. The prompts are the product.
+        Run these prompts directly in the AI API console with 20 diverse user profiles before writing any Flutter code that displays plan output. If the prompts don't produce the "moment of recognition" for a vegetarian Gujarati in Washington DC, a night-shift nurse from Lagos in London, and a Mexican-American night owl in Houston — the UI is irrelevant. The prompts are the product.
       </div>
 
       <h3 class="section-title" style="font-size:1.05rem;margin-top:1.5rem;">Template 1 — Daily Brief Generation</h3>
@@ -907,7 +907,7 @@ Guidelines for your response:
       <a href="../../how-it-works/">How It Works</a>
       <a href="../../docs/">Docs</a>
       <a href="../../about/">About</a>
-      <a href="mailto:hello@vitara.health">Contact</a>
+      <a href="../../about/">Contact</a>
     </nav>
   </div>
 </footer>
