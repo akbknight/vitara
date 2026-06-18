@@ -163,9 +163,6 @@
   const html = document.documentElement;
   const saved = sessionStorage.getItem('vitara-theme');
   if (saved) html.setAttribute('data-theme', saved);
-  else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    html.setAttribute('data-theme', 'dark');
-  }
   if (themeToggle) {
     themeToggle.addEventListener('click', () => {
       const next = html.getAttribute('data-theme') === 'dark' ? '' : 'dark';

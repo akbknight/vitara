@@ -8,6 +8,8 @@
   gsap.registerPlugin(ScrollTrigger);
 
   // ─── Hero entrance (homepage only) ──────────────────
+  // Hero elements have NO .reveal class — natural opacity is 1
+  // so gsap.from(opacity:0) correctly animates 0→1 here
   const heroLines = document.querySelectorAll('.hero-line');
   const heroEyebrow = document.querySelector('.hero-eyebrow');
   const heroSub = document.querySelector('#hero .hero-sub');
@@ -18,7 +20,6 @@
     if (heroEyebrow) {
       tl.from(heroEyebrow, { opacity: 0, y: 16, duration: 0.6, ease: 'expo.out' });
     }
-    // stagger 0.12s; .hero-line--em gets an extra implicit 0.05s via duration overlap
     tl.from(heroLines, {
       y: 64,
       opacity: 0,
@@ -38,96 +39,58 @@
     }
   }
 
-  // ─── ScrollTrigger reveals (replace IntersectionObserver) ──
+  // ─── ScrollTrigger reveals ───────────────────────────
+  // BUG FIX: .reveal elements have CSS opacity:0 — gsap.from() reads that as
+  // the "to" value, creating a 0→0 no-op while writing inline opacity:0 that
+  // overrides the CSS .reveal.visible { opacity:1 } class. Use fromTo() to
+  // explicitly declare both start and end states.
   gsap.utils.toArray('.reveal').forEach((el) => {
     if (el.classList.contains('visible')) return;
-    gsap.from(el, {
-      scrollTrigger: {
-        trigger: el,
-        start: 'top 88%',
-        toggleActions: 'play none none none',
-        onEnter: () => el.classList.add('visible'),
-      },
-      opacity: 0,
-      y: 28,
-      duration: 0.7,
-      ease: 'expo.out',
-    });
+    gsap.fromTo(el,
+      { opacity: 0, y: 22 },
+      {
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 90%',
+          toggleActions: 'play none none none',
+        },
+        opacity: 1,
+        y: 0,
+        duration: 0.65,
+        ease: 'expo.out',
+        clearProps: 'opacity,transform',
+      }
+    );
   });
 
-  // ─── Pull quote reveal — translateX ─────────────────
+  // ─── Pull quote — translateX entrance ───────────────
   gsap.utils.toArray('.pull-quote').forEach((el) => {
-    gsap.from(el, {
-      scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' },
-      x: 20,
-      opacity: 0,
-      duration: 0.8,
-      ease: 'expo.out',
-    });
+    gsap.fromTo(el,
+      { opacity: 0, x: 24 },
+      {
+        scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
+        opacity: 1,
+        x: 0,
+        duration: 0.85,
+        ease: 'expo.out',
+        clearProps: 'opacity,transform',
+      }
+    );
   });
-
-  // ─── Failure cards — alternating entrance ───────────
-  const failureItems = document.querySelectorAll('.failure-item');
-  failureItems.forEach((el, i) => {
-    const dir = i % 2 === 0 ? -24 : 24;
-    gsap.from(el, {
-      scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
-      x: dir,
-      opacity: 0,
-      duration: 0.65,
-      ease: 'expo.out',
-      delay: i * 0.08,
-    });
-  });
-
-  // ─── Persona rows — stagger ─────────────────────────
-  const personaRows = document.querySelectorAll('.persona-row');
-  if (personaRows.length) {
-    gsap.from(personaRows, {
-      scrollTrigger: { trigger: personaRows[0], start: 'top 85%', toggleActions: 'play none none none' },
-      opacity: 0,
-      x: -20,
-      duration: 0.6,
-      stagger: 0.1,
-      ease: 'expo.out',
-    });
-  }
-
-  // ─── Feature cards — stagger ─────────────────────────
-  const featureCards = document.querySelectorAll('.feature-card');
-  if (featureCards.length) {
-    gsap.from(featureCards, {
-      scrollTrigger: { trigger: featureCards[0], start: 'top 85%', toggleActions: 'play none none none' },
-      opacity: 0,
-      y: 32,
-      duration: 0.65,
-      stagger: 0.09,
-      ease: 'expo.out',
-    });
-  }
-
-  // ─── Phase cards — stagger ──────────────────────────
-  const phases = document.querySelectorAll('.phase');
-  if (phases.length) {
-    gsap.from(phases, {
-      scrollTrigger: { trigger: phases[0], start: 'top 85%', toggleActions: 'play none none none' },
-      opacity: 0,
-      y: 24,
-      duration: 0.6,
-      stagger: 0.1,
-      ease: 'expo.out',
-    });
-  }
 
   // ─── Timeline dot reveal (about page) ───────────────
   document.querySelectorAll('.tl-dot').forEach((dot, i) => {
-    gsap.to(dot, {
-      scrollTrigger: { trigger: dot, start: 'top 88%', toggleActions: 'play none none none' },
-      scale: 1,
-      duration: 0.45,
-      ease: 'back.out(2.5)',
-      delay: i * 0.08,
-    });
+    gsap.fromTo(dot,
+      { scale: 0 },
+      {
+        scrollTrigger: { trigger: dot, start: 'top 90%', toggleActions: 'play none none none' },
+        scale: 1,
+        duration: 0.45,
+        ease: 'back.out(2.5)',
+        delay: i * 0.08,
+        clearProps: 'transform',
+      }
+    );
   });
 
   // ─── Count-up numbers ────────────────────────────────
@@ -135,7 +98,7 @@
     const target = +el.dataset.target;
     const obj = { val: 0 };
     gsap.to(obj, {
-      scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
+      scrollTrigger: { trigger: el, start: 'top 90%', toggleActions: 'play none none none' },
       val: target,
       duration: 1.8,
       ease: 'power2.out',
@@ -221,12 +184,8 @@
       pill.className = 'docs-sidebar-pill';
       docsNav.style.position = 'relative';
       docsNav.appendChild(pill);
-
-      const top = activeItem.offsetTop;
-      const height = activeItem.offsetHeight;
-      pill.style.top = top + 'px';
-      pill.style.height = height + 'px';
-
+      pill.style.top = activeItem.offsetTop + 'px';
+      pill.style.height = activeItem.offsetHeight + 'px';
       gsap.fromTo(pill,
         { scaleX: 0, opacity: 0 },
         { scaleX: 1, opacity: 1, duration: 0.4, ease: 'power2.out', delay: 0.35 }
