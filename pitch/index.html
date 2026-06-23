@@ -459,12 +459,15 @@
     fromSlide.classList.remove('active');
     fromSlide.classList.add('exit');
 
-    // Set entry direction for incoming
+    // Set entry direction for incoming (inline overrides .slide base opacity:0)
     toSlide.style.transform = forward ? 'translateX(40px)' : 'translateX(-40px)';
     toSlide.style.opacity = '0';
     toSlide.style.pointerEvents = 'none';
 
-    // Force reflow
+    // Add .active NOW so after inline styles clear, CSS keeps slide visible
+    toSlide.classList.add('active');
+
+    // Force reflow so browser records the start position before transition
     toSlide.offsetHeight;
 
     // Animate in
@@ -478,6 +481,7 @@
 
     setTimeout(() => {
       fromSlide.classList.remove('exit');
+      // Clear inline styles — .slide.active CSS keeps opacity:1 transform:none
       toSlide.style.transition = '';
       toSlide.style.transform = '';
       toSlide.style.opacity = '';
