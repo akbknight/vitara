@@ -1,0 +1,6 @@
+project_id = "vitara"
+
+[functions.generate-daily-plan]
+enabled = true
+verify_jwt = true
+entrypoint = "./functions/generate-daily-plan/index.ts"

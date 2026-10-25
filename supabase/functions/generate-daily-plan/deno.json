@@ -1,0 +1,11 @@
+{
+  "compilerOptions": { "strict": true },
+  "nodeModulesDir": "auto",
+  "lock": true,
+  "lint": { "rules": { "exclude": ["no-import-prefix"] } },
+  "tasks": {
+    "check": "deno check index.ts",
+    "test": "deno test --allow-env index_test.ts",
+    "lint": "deno lint index.ts index_test.ts"
+  }
+}
